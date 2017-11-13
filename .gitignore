@@ -1,0 +1,4 @@
+#ignoring stuff
+.idea
+target/
+game-project.iml
