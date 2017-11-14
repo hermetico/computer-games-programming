@@ -5,9 +5,8 @@ import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.opengl.GL11.glClearColor;
+
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class DisplayManager {
@@ -50,6 +49,7 @@ public class DisplayManager {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         // this fails for a version avobe 3.0, maybe it can be switched on and off
         //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        // so try this upper line using a version of 3.3 or 3.2
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
@@ -124,6 +124,9 @@ public class DisplayManager {
 
     public boolean isResized() {
         return resized;
+    }
+    public void resize(){
+        glViewport(0, 0, getWidth(), getHeight());
     }
 
     public void setResized(boolean resized) {

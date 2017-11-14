@@ -1,6 +1,8 @@
 package engineTester;
 
+import entities.Entity;
 import models.TexturedModel;
+import org.joml.Vector3f;
 import textures.ModelTexture;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
@@ -97,7 +99,7 @@ public class MainGameLoop implements Runnable{
         RawModel model = loader.loadToVAO(vertices, textureCoords, indices);
         ModelTexture texture = new ModelTexture(loader.loadTexture("trencadis"));
         TexturedModel texturedModel = new TexturedModel(model, texture);
-
+        Entity entity = new Entity(texturedModel, new Vector3f(0,0,0), 0,0,5,1);
 
         while (running && !display.windowShouldClose()) {
             elapsedTime = timer.getElapsedTime();
@@ -107,14 +109,17 @@ public class MainGameLoop implements Runnable{
             input();
             renderer.prepare();
             shader.start();
-
+            if (display.isResized()) {
+                display.resize();
+                display.setResized(false);
+            }
             while (accumulator >= interval) {
                 update(interval);
                 accumulator -= interval;
             }
 
 
-            renderer.render(texturedModel);
+            renderer.render(entity,shader);
             shader.stop();
             display.updateDisplay();
 
