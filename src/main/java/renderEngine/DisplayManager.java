@@ -145,4 +145,7 @@ public class DisplayManager {
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
     }
+    public long getWindowHandle() {
+        return windowHandle;
+    }
 }
