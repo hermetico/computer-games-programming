@@ -10,6 +10,8 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import models.RawModel;
 import utils.MouseInput;
+import utils.OBJConverter.ModelData;
+import utils.OBJConverter.OBJFileLoader;
 
 
 import java.util.ArrayList;
@@ -104,8 +106,8 @@ public class MainGameLoop implements Runnable{
         RawModel  model = OBJLoader.loadObjModel("grassModel", loader);
         TexturedModel grassModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("grassTexture")));
         ModelTexture  texture = grassModel.getTexture();
-        texture.setShineDamper(10);
-        texture.setReflectivity(2);
+        texture.setShineDamper(5);
+        texture.setReflectivity(1);
         texture.setHasTransparency(true);
         texture.setUseFakeLighting(true);
 
@@ -113,23 +115,41 @@ public class MainGameLoop implements Runnable{
         RawModel fern = OBJLoader.loadObjModel("fern", loader);
         TexturedModel fernModel = new TexturedModel(fern, new ModelTexture(loader.loadTexture("fern")));
         texture = fernModel.getTexture();
-        texture.setShineDamper(10);
-        texture.setReflectivity(2);
+        texture.setShineDamper(5);
+        texture.setReflectivity(1);
         texture.setHasTransparency(true);
         texture.setUseFakeLighting(true);
+
+        ModelData dataTree = OBJFileLoader.loadOBJ("lowPolyTree");
+        RawModel tree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(),
+                dataTree.getNormals(), dataTree.getIndices());
+        TexturedModel treeModel = new TexturedModel(tree, new ModelTexture(loader.loadTexture("lowPolyTree")));
+        texture = treeModel.getTexture();
+        texture.setShineDamper(100);
+        texture.setReflectivity(2);
 
         allItems = new ArrayList<Entity>();
         Random random = new Random();
         for(int i = 0; i < 50; i++){
             float x = random.nextFloat() * 100 -50;
             float z = random.nextFloat() * -300;
-            allItems.add(new Entity(grassModel, new Vector3f(x,0.5f,z),
-                    0, 0,0,1f));
+            allItems.add(new Entity(grassModel, new Vector3f(x,0,z),
+                    0, random.nextFloat() * 180f,0,1f));
         }
         for(int i = 0; i < 100; i++){
             float x = random.nextFloat() * 500 - 250;
             float z = random.nextFloat() * -400;
             allItems.add(new Entity(fernModel, new Vector3f(x,0,z),
+                    0,
+                    random.nextFloat() * 180f,
+                    0,
+                    1f));
+        }
+
+        for(int i = 0; i < 100; i++){
+            float x = random.nextFloat() * 500 - 250;
+            float z = random.nextFloat() * -400;
+            allItems.add(new Entity(treeModel, new Vector3f(x,0,z),
                     0,
                     random.nextFloat() * 180f,
                     0,
