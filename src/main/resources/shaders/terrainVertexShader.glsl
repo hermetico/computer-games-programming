@@ -20,7 +20,7 @@ const float gradient = 5.0;
 
 void main(void){
 
-    pass_textureCoords = textureCoords * 100;
+    pass_textureCoords = textureCoords;
 
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
     vec4 positionRelativeToCam = viewMatrix * worldPosition;

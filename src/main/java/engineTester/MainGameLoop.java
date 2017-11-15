@@ -9,6 +9,8 @@ import renderEngine.*;
 import terrains.Terrain;
 import textures.ModelTexture;
 import models.RawModel;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 import utils.MouseInput;
 import utils.OBJConverter.ModelData;
 import utils.OBJConverter.OBJFileLoader;
@@ -158,8 +160,16 @@ public class MainGameLoop implements Runnable{
 
 
         light = new Light(new Vector3f(200,200,100), new Vector3f(1,1,1));
-        terrain = new Terrain(0,-1, loader, new ModelTexture(loader.loadTexture("grass")));
-        terrain2 = new Terrain(-1,-1, loader, new ModelTexture(loader.loadTexture("grass")));
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("tiles"));
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+
+        TerrainTexturePack texturePack= new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+
+        terrain = new Terrain(0,-1, loader, texturePack, blendMap);
+        terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap);
 
 
 
