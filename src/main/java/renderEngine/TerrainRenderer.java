@@ -16,7 +16,7 @@ import utils.Maths;
 
 import java.util.List;
 
-/// TODO keep watching https://www.youtube.com/watch?v=yNYwZMmgTJk&list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP&index=14
+
 public class TerrainRenderer {
 
     private TerrainShader shader;
@@ -72,8 +72,7 @@ public class TerrainRenderer {
 
     private void loadModelMatrix(Terrain terrain){
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(
-                new Vector3f(terrain.getX(), 0, terrain.getZ()),
-                0, 0,0, 1);
+                new Vector3f(terrain.getX(), 0, terrain.getZ()),0,0,0,1);
         shader.loadTransformationMatrix(transformationMatrix);
     }
 }

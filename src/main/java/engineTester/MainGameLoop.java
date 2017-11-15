@@ -6,6 +6,7 @@ import entities.Light;
 import models.TexturedModel;
 import org.joml.Vector3f;
 import renderEngine.*;
+import terrains.Terrain;
 import textures.ModelTexture;
 import models.RawModel;
 import utils.MouseInput;
@@ -36,6 +37,9 @@ public class MainGameLoop implements Runnable{
     MouseInput mouseInput;
     Light light;
 
+    List<Entity> allCubes;
+    Terrain terrain;
+    Terrain terrain2;
     public static void main(String[] args){
         try {
             boolean vSync = false;
@@ -104,7 +108,7 @@ public class MainGameLoop implements Runnable{
         texture.setReflectivity(2);
 
         light = new Light(new Vector3f(200,200,100), new Vector3f(1,1,1));
-        List<Entity> allCubes = new ArrayList<Entity>();
+        allCubes = new ArrayList<Entity>();
         Random random = new Random();
         for(int i = 0; i < 200; i++){
             float x = random.nextFloat() * 100 -50;
@@ -117,6 +121,8 @@ public class MainGameLoop implements Runnable{
                     1f));
         }
 
+        terrain = new Terrain(0,-1, loader, new ModelTexture(loader.loadTexture("grass")));
+        terrain2 = new Terrain(1,-1, loader, new ModelTexture(loader.loadTexture("grass")));
 
 
 
@@ -141,7 +147,7 @@ public class MainGameLoop implements Runnable{
             }
 
 
-            this.render(allCubes);
+            this.render();
 
             if (!display.isvSync()) {
                 this.sync();
@@ -191,14 +197,17 @@ public class MainGameLoop implements Runnable{
 
     }
 
-    protected void render(List<Entity> entities){
+    protected void render(){
         if (display.isResized()) {
             display.resize();
             renderer.updateProjectionMatrix(display.getWidth(), display.getHeight());
             display.setResized(false);
         }
 
-        for(Entity entity : entities){
+        renderer.processTerrain(terrain);;
+        renderer.processTerrain(terrain2);
+
+        for(Entity entity : allCubes){
             renderer.processEntity(entity);
         }
         renderer.render(light, camera);

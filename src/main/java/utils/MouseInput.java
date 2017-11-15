@@ -23,7 +23,7 @@ public class MouseInput {
 
     public void init(DisplayManager display) {
         glfwSetScrollCallback(display.getWindowHandle(), (windowHandle, xoffset, yoffset) -> {
-            zoomOffset = (float) yoffset;
+            zoomOffset = (float) yoffset * -1;
         });
     }
 
