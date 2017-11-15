@@ -2,17 +2,18 @@ package engineTester;
 
 import entities.Camera;
 import entities.Entity;
+import entities.Light;
 import models.TexturedModel;
 import org.joml.Vector3f;
-import renderEngine.OBJLoader;
+import renderEngine.*;
 import textures.ModelTexture;
-import renderEngine.DisplayManager;
-import renderEngine.Loader;
 import models.RawModel;
-import renderEngine.Renderer;
-import shaders.StaticShader;
 import utils.MouseInput;
 
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -29,11 +30,11 @@ public class MainGameLoop implements Runnable{
     private final Timer timer;
 
     Loader loader;
-    Renderer renderer;
-    StaticShader shader;
-    Entity entity;
+    MasterRenderer renderer;
+
     Camera camera;
     MouseInput mouseInput;
+    Light light;
 
     public static void main(String[] args){
         try {
@@ -50,6 +51,9 @@ public class MainGameLoop implements Runnable{
         gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
         display = new DisplayManager(windowTitle, width, height, vSync);
         timer = new Timer();
+        renderer = new MasterRenderer();
+        loader = new Loader();
+        mouseInput = new MouseInput();
     }
 
     public void start() {
@@ -72,8 +76,12 @@ public class MainGameLoop implements Runnable{
     }
 
     protected void init() throws Exception {
-        display.createDisplay();
 
+
+
+        display.createDisplay();
+        renderer.init(display.getWidth(), display.getHeight());
+        mouseInput.init(display);
         timer.init();
 
     }
@@ -85,19 +93,35 @@ public class MainGameLoop implements Runnable{
 
         boolean running = true;
 
-        loader = new Loader();
-        mouseInput = new MouseInput();
-        mouseInput.init(display);
-        shader = new StaticShader();
-        renderer = new Renderer(shader, display.getWidth(), display.getHeight());
 
 
-        RawModel  model = OBJLoader.loadObjModel("stall", loader);
-        //RawModel model = loader.loadToVAO(vertices, textureCoords, indices);
-        ModelTexture texture = new ModelTexture(loader.loadTexture("stallTexture"));
-        TexturedModel texturedModel = new TexturedModel(model, texture);
 
-        entity = new Entity(texturedModel, new Vector3f(0,0,-50), 0,0,0,1);
+
+        RawModel  model = OBJLoader.loadObjModel("cube", loader);
+        TexturedModel cubeModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("trencadis")));
+        ModelTexture  texture = cubeModel.getTexture();
+        texture.setShineDamper(10);
+        texture.setReflectivity(2);
+
+        light = new Light(new Vector3f(200,200,100), new Vector3f(1,1,1));
+        List<Entity> allCubes = new ArrayList<Entity>();
+        Random random = new Random();
+        for(int i = 0; i < 200; i++){
+            float x = random.nextFloat() * 100 -50;
+            float y = random.nextFloat() * 100 -50;
+            float z = random.nextFloat() * -300;
+            allCubes.add(new Entity(cubeModel, new Vector3f(x,y,z),
+                    random.nextFloat() * 180f,
+                    random.nextFloat() * 180f,
+                    random.nextFloat() * 180f,
+                    1f));
+        }
+
+
+
+
+
+
         camera = new Camera();
 
         while (running && !display.windowShouldClose()) {
@@ -112,18 +136,19 @@ public class MainGameLoop implements Runnable{
 
             while (accumulator >= interval) {
                 // update game state
-                this.update(interval);
+                this.update(interval, allCubes);
                 accumulator -= interval;
             }
 
 
-            this.render();
+            this.render(allCubes);
 
             if (!display.isvSync()) {
                 this.sync();
             }
         }
-        shader.cleanUp();
+
+        renderer.cleanUp();
         loader.cleanUp();
     }
 
@@ -159,22 +184,24 @@ public class MainGameLoop implements Runnable{
         }
     }
 
-    protected void update(float interval) {
-        entity.increaseRotation(0,1,0);
+    protected void update(float interval, List<Entity> entities) {
+        for(Entity entity : entities){
+            entity.increaseRotation(1,1,1);
+        }
+
     }
 
-    protected void render(){
+    protected void render(List<Entity> entities){
         if (display.isResized()) {
             display.resize();
+            renderer.updateProjectionMatrix(display.getWidth(), display.getHeight());
             display.setResized(false);
         }
 
-        renderer.prepare();
-        shader.start();
-        shader.loadViewMatrix(camera);
-        renderer.render(entity,shader);
-
-        shader.stop();
+        for(Entity entity : entities){
+            renderer.processEntity(entity);
+        }
+        renderer.render(light, camera);
         display.updateDisplay();
 
     }
