@@ -41,7 +41,9 @@ void main(void){
 
     vec3 finalSpecular = dampedFactor * reflectivity * lightColour;
 
+    vec4 textureColour = texture(textureSampler, pass_textureCoords);
+    if(textureColour.a < .5) discard;
     // returns the color of the pixel at the coordinates in pass_textureCoords
-    out_Color = vec4(diffuse, 1.0) * texture(textureSampler, pass_textureCoords) + vec4(finalSpecular, 1.0);
+    out_Color = vec4(diffuse, 1.0) * textureColour + vec4(finalSpecular, 1.0);
 
 }

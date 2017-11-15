@@ -37,7 +37,7 @@ public class MainGameLoop implements Runnable{
     MouseInput mouseInput;
     Light light;
 
-    List<Entity> allCubes;
+    List<Entity> allItems;
     Terrain terrain;
     Terrain terrain2;
     public static void main(String[] args){
@@ -101,34 +101,52 @@ public class MainGameLoop implements Runnable{
 
 
 
-        RawModel  model = OBJLoader.loadObjModel("cube", loader);
-        TexturedModel cubeModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("trencadis")));
-        ModelTexture  texture = cubeModel.getTexture();
+        RawModel  model = OBJLoader.loadObjModel("grassModel", loader);
+        TexturedModel grassModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("grassTexture")));
+        ModelTexture  texture = grassModel.getTexture();
         texture.setShineDamper(10);
         texture.setReflectivity(2);
+        texture.setHasTransparency(true);
+        texture.setUseFakeLighting(true);
 
-        light = new Light(new Vector3f(200,200,100), new Vector3f(1,1,1));
-        allCubes = new ArrayList<Entity>();
+
+        RawModel fern = OBJLoader.loadObjModel("fern", loader);
+        TexturedModel fernModel = new TexturedModel(fern, new ModelTexture(loader.loadTexture("fern")));
+        texture = fernModel.getTexture();
+        texture.setShineDamper(10);
+        texture.setReflectivity(2);
+        texture.setHasTransparency(true);
+        texture.setUseFakeLighting(true);
+
+        allItems = new ArrayList<Entity>();
         Random random = new Random();
-        for(int i = 0; i < 200; i++){
+        for(int i = 0; i < 50; i++){
             float x = random.nextFloat() * 100 -50;
-            float y = random.nextFloat() * 100 -50;
             float z = random.nextFloat() * -300;
-            allCubes.add(new Entity(cubeModel, new Vector3f(x,y,z),
+            allItems.add(new Entity(grassModel, new Vector3f(x,0.5f,z),
+                    0, 0,0,1f));
+        }
+        for(int i = 0; i < 100; i++){
+            float x = random.nextFloat() * 500 - 250;
+            float z = random.nextFloat() * -400;
+            allItems.add(new Entity(fernModel, new Vector3f(x,0,z),
+                    0,
                     random.nextFloat() * 180f,
-                    random.nextFloat() * 180f,
-                    random.nextFloat() * 180f,
+                    0,
                     1f));
         }
 
+
+        light = new Light(new Vector3f(200,200,100), new Vector3f(1,1,1));
         terrain = new Terrain(0,-1, loader, new ModelTexture(loader.loadTexture("grass")));
-        terrain2 = new Terrain(1,-1, loader, new ModelTexture(loader.loadTexture("grass")));
+        terrain2 = new Terrain(-1,-1, loader, new ModelTexture(loader.loadTexture("grass")));
 
 
 
 
 
         camera = new Camera();
+        camera.moveY(1);
 
         while (running && !display.windowShouldClose()) {
 
@@ -142,7 +160,7 @@ public class MainGameLoop implements Runnable{
 
             while (accumulator >= interval) {
                 // update game state
-                this.update(interval, allCubes);
+                this.update(interval);
                 accumulator -= interval;
             }
 
@@ -190,10 +208,10 @@ public class MainGameLoop implements Runnable{
         }
     }
 
-    protected void update(float interval, List<Entity> entities) {
-        for(Entity entity : entities){
-            entity.increaseRotation(1,1,1);
-        }
+    protected void update(float interval) {
+        //for(Entity entity : items){
+        //    entity.increaseRotation(1,1,1);
+        //}
 
     }
 
@@ -207,7 +225,7 @@ public class MainGameLoop implements Runnable{
         renderer.processTerrain(terrain);;
         renderer.processTerrain(terrain2);
 
-        for(Entity entity : allCubes){
+        for(Entity entity : allItems){
             renderer.processEntity(entity);
         }
         renderer.render(light, camera);

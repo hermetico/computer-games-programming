@@ -7,8 +7,8 @@ import utils.Maths;
 
 public class TerrainShader extends ShaderProgram {
 
-    private static final String VERTEX_FILE = "/shaders/terrainVertexShader.vs";
-    private static final String FRAGMENT_FILE = "/shaders/terrainFragmentShader.fs";
+    private static final String VERTEX_FILE = "/shaders/terrainVertexShader.glsl";
+    private static final String FRAGMENT_FILE = "/shaders/terrainFragmentShader.glsl";
 
     private int location_transformationMatrix;
     private int location_projectionMatrix;
