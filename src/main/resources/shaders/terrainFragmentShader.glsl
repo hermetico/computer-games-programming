@@ -24,7 +24,7 @@ void main(void){
 
     vec4 blendMapColour = texture(blendMap, pass_textureCoords);
     float backTectureAmount = 1 - (blendMapColour.r + blendMapColour.g + blendMapColour.b);
-    vec2 tileCoord = pass_textureCoords * 200;
+    vec2 tileCoord = pass_textureCoords * 100;
     vec4 backgroundTextureColour = texture(backgroundTexture, tileCoord) * backTectureAmount;
     vec4 rTextureColour = texture(rTexture, tileCoord) * blendMapColour.r;
     vec4 gTextureColour = texture(gTexture, tileCoord) * blendMapColour.g;
