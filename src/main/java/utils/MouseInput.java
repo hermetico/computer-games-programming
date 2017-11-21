@@ -8,17 +8,21 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class MouseInput {
 
-    private final Vector2d previousPos;
+    private final Vector2d previousPos = new Vector2d(-1, -1);;
 
-    private final Vector2d currentPos;
+    private final Vector2d currentPos = new Vector2d(0, 0);
 
-    private final Vector2f displVec;
+    private final Vector2f displVec = new Vector2f();
+
     private float zoomOffset = 0;
+    private static MouseInput instance;
 
-    public MouseInput() {
-        previousPos = new Vector2d(-1, -1);
-        currentPos = new Vector2d(0, 0);
-        displVec = new Vector2f();
+    private MouseInput() {}
+    public static MouseInput getInstance(){
+        if(instance == null){
+            instance = new MouseInput();
+        }
+        return instance;
     }
 
     public void init(DisplayManager display) {
@@ -31,9 +35,6 @@ public class MouseInput {
         return displVec;
     }
 
-    public void input(DisplayManager display) {
-        //TODO
-    }
 
     public boolean zoom() {
         return zoomOffset != 0.0;

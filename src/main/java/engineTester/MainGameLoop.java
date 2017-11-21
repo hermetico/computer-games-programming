@@ -63,7 +63,7 @@ public class MainGameLoop implements Runnable{
         timer = new Timer();
         renderer = new MasterRenderer();
         loader = new Loader();
-        mouseInput = new MouseInput();
+        mouseInput = MouseInput.getInstance();
         keyboardInput = KeyboardInput.getInstance();
     }
 
@@ -87,9 +87,6 @@ public class MainGameLoop implements Runnable{
     }
 
     protected void init() throws Exception {
-
-
-
         display.createDisplay();
         keyboardInput.init(display.getWindowHandle());
         renderer.init(display.getWidth(), display.getHeight());
