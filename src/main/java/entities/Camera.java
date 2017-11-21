@@ -103,7 +103,7 @@ public class Camera {
 
     private void calculatePitch(){
         if(mouseInput.isKeyPressed(GLFW_MOUSE_BUTTON_LEFT)){
-            pitch -=  mouseInput.getYOffset() * 0.1f;
+            pitch +=  mouseInput.getYOffset() * 0.1f;
 
         }
     }
