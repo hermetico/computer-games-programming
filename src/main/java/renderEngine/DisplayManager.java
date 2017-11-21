@@ -102,9 +102,6 @@ public class DisplayManager {
         glClearColor(r, g, b, alpha);
     }
 
-    public boolean isKeyPressed(int keyCode) {
-        return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
-    }
 
     public boolean windowShouldClose() {
         return glfwWindowShouldClose(windowHandle);

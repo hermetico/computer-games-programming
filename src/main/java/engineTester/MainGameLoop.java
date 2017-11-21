@@ -5,12 +5,14 @@ import entities.Entity;
 import entities.Light;
 import models.TexturedModel;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import renderEngine.*;
 import terrains.Terrain;
 import textures.ModelTexture;
 import models.RawModel;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import utils.KeyboardInput;
 import utils.MouseInput;
 import utils.OBJConverter.ModelData;
 import utils.OBJConverter.OBJFileLoader;
@@ -24,12 +26,12 @@ import static org.lwjgl.glfw.GLFW.*;
 
 
 public class MainGameLoop implements Runnable{
-    public static final int TARGET_FPS = 60;
+    private static final int TARGET_FPS = 60;
+    private static final int TARGET_UPS = 60;
 
-    public static final int TARGET_UPS = 60;
 
     private final DisplayManager display;
-
+    private final KeyboardInput keyboardInput;
     private final Thread gameLoopThread;
 
     private final Timer timer;
@@ -62,6 +64,7 @@ public class MainGameLoop implements Runnable{
         renderer = new MasterRenderer();
         loader = new Loader();
         mouseInput = new MouseInput();
+        keyboardInput = KeyboardInput.getInstance();
     }
 
     public void start() {
@@ -88,6 +91,7 @@ public class MainGameLoop implements Runnable{
 
 
         display.createDisplay();
+        keyboardInput.init(display.getWindowHandle());
         renderer.init(display.getWidth(), display.getHeight());
         mouseInput.init(display);
         timer.init();
@@ -220,16 +224,16 @@ public class MainGameLoop implements Runnable{
     
     public void input(DisplayManager display, Camera camera) {
 
-        if (display.isKeyPressed(GLFW_KEY_W)) {
+        if (keyboardInput.isKeyPressed(GLFW_KEY_W)) {
             camera.moveY(0.1f);
         }
-        if (display.isKeyPressed(GLFW_KEY_S)) {
+        if (keyboardInput.isKeyPressed(GLFW_KEY_S)) {
             camera.moveY(-0.1f);
         }
-        if (display.isKeyPressed(GLFW_KEY_A)) {
+        if (keyboardInput.isKeyPressed(GLFW_KEY_A)) {
             camera.moveX(-0.1f);
         }
-        if (display.isKeyPressed(GLFW_KEY_D)) {
+        if (keyboardInput.isKeyPressed(GLFW_KEY_D)) {
             camera.moveX(0.1f);
         }
         if(mouseInput.zoom()){
@@ -262,6 +266,7 @@ public class MainGameLoop implements Runnable{
         display.updateDisplay();
 
     }
+
 
 
 }
