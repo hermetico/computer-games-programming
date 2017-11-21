@@ -1,7 +1,5 @@
 package utils;
 
-import renderEngine.DisplayManager;
-
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
 
