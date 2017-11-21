@@ -105,9 +105,15 @@ public class MainGameLoop implements Runnable{
         boolean running = true;
 
 
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("tiles"));
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
+        TerrainTexturePack texturePack= new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 
-
+        terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
         RawModel  model = OBJLoader.loadObjModel("grassModel", loader);
         TexturedModel grassModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("grassTexture")));
         ModelTexture  texture = grassModel.getTexture();
@@ -138,13 +144,15 @@ public class MainGameLoop implements Runnable{
         for(int i = 0; i < 50; i++){
             float x = random.nextFloat() * 100 -50;
             float z = random.nextFloat() * -300;
-            allItems.add(new Entity(grassModel, new Vector3f(x,0,z),
+            float y = terrain.getTerrainHeight(x, z);
+            allItems.add(new Entity(grassModel, new Vector3f(x,y,z),
                     0, random.nextFloat() * 180f,0,1f));
         }
         for(int i = 0; i < 100; i++){
             float x = random.nextFloat() * 500 - 250;
             float z = random.nextFloat() * -400;
-            allItems.add(new Entity(fernModel, new Vector3f(x,0,z),
+            float y = terrain.getTerrainHeight(x, z);
+            allItems.add(new Entity(fernModel, new Vector3f(x,y,z),
                     0,
                     random.nextFloat() * 180f,
                     0,
@@ -154,7 +162,8 @@ public class MainGameLoop implements Runnable{
         for(int i = 0; i < 100; i++){
             float x = random.nextFloat() * 500 - 250;
             float z = random.nextFloat() * -400;
-            allItems.add(new Entity(treeModel, new Vector3f(x,0,z),
+            float y = terrain.getTerrainHeight(x, z);
+            allItems.add(new Entity(treeModel, new Vector3f(x,y,z),
                     0,
                     random.nextFloat() * 180f,
                     0,
@@ -163,16 +172,9 @@ public class MainGameLoop implements Runnable{
 
 
         light = new Light(new Vector3f(200,200,100), new Vector3f(1,1,1));
-        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
-        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
-        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
-        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("tiles"));
-        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-        TerrainTexturePack texturePack= new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 
-        terrain = new Terrain(0,-1, loader, texturePack, blendMap);
-        terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap);
+
 
 
         RawModel bunnyModel = OBJLoader.loadObjModel("bunny", loader);
@@ -229,7 +231,7 @@ public class MainGameLoop implements Runnable{
     }
 
     protected void update(float interval) {
-        player.update(interval);
+        player.update(interval, terrain);
         camera.update(interval);
 
     }
@@ -243,7 +245,6 @@ public class MainGameLoop implements Runnable{
 
         renderer.processEntity(player);
         renderer.processTerrain(terrain);
-        renderer.processTerrain(terrain2);
 
         for(Entity entity : allItems){
             renderer.processEntity(entity);
