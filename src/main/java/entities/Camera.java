@@ -3,9 +3,6 @@ package entities;
 import org.joml.Vector3f;
 import utils.KeyboardInput;
 import utils.MouseInput;
-
-import java.security.Key;
-
 import static org.lwjgl.glfw.GLFW.*;
 
 
@@ -51,16 +48,6 @@ public class Camera {
         float verticalDistance = calculateVerticalDistance();
         calculateCameraPosition(horizontalDistance, verticalDistance);
         this.yaw = 180 - (player.getRotY() + angleAroundPlayer);
-    }
-
-    public void moveX(float offset){
-        position.x += offset;
-    }
-    public void moveY(float offset){
-        position.y += offset;
-    }
-    public void moveZ(float offset){
-        position.z += offset;
     }
 
     public Vector3f getPosition() {
