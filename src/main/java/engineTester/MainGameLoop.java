@@ -3,6 +3,7 @@ package engineTester;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.TexturedModel;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -46,6 +47,7 @@ public class MainGameLoop implements Runnable{
     List<Entity> allItems;
     Terrain terrain;
     Terrain terrain2;
+    Player player;
     public static void main(String[] args){
         try {
             boolean vSync = false;
@@ -173,11 +175,14 @@ public class MainGameLoop implements Runnable{
         terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap);
 
 
-
+        RawModel bunnyModel = OBJLoader.loadObjModel("bunny", loader);
+        TexturedModel bunny = new TexturedModel(bunnyModel, new ModelTexture(
+                loader.loadTexture("purple")));
+        player = new Player(bunny, new Vector3f(0, 0, 0), 0,-45, 0,1);
 
 
         camera = new Camera();
-        camera.moveY(1);
+        camera.moveY(10);
 
         while (running && !display.windowShouldClose()) {
 
@@ -186,7 +191,7 @@ public class MainGameLoop implements Runnable{
             accumulator += elapsedTime;
 
 
-            this.input(display, camera);
+            this.input();
 
 
             while (accumulator >= interval) {
@@ -219,30 +224,12 @@ public class MainGameLoop implements Runnable{
     }
 
     
-    public void input(DisplayManager display, Camera camera) {
-
-        if (keyboardInput.isKeyPressed(GLFW_KEY_W)) {
-            camera.moveY(0.1f);
-        }
-        if (keyboardInput.isKeyPressed(GLFW_KEY_S)) {
-            camera.moveY(-0.1f);
-        }
-        if (keyboardInput.isKeyPressed(GLFW_KEY_A)) {
-            camera.moveX(-0.1f);
-        }
-        if (keyboardInput.isKeyPressed(GLFW_KEY_D)) {
-            camera.moveX(0.1f);
-        }
-        if(mouseInput.zoom()){
-            camera.moveZ(mouseInput.consumeZoom());
-
-        }
+    public void input() {
+        player.input();
     }
 
     protected void update(float interval) {
-        //for(Entity entity : items){
-        //    entity.increaseRotation(1,1,1);
-        //}
+        player.update(interval);
 
     }
 
@@ -253,7 +240,8 @@ public class MainGameLoop implements Runnable{
             display.setResized(false);
         }
 
-        renderer.processTerrain(terrain);;
+        renderer.processEntity(player);
+        renderer.processTerrain(terrain);
         renderer.processTerrain(terrain2);
 
         for(Entity entity : allItems){

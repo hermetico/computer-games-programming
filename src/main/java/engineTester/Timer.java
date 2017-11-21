@@ -22,4 +22,5 @@ public class Timer {
     public double getLastLoopTime() {
         return lastLoopTime;
     }
+
 }
