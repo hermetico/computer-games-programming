@@ -91,8 +91,8 @@ public class MainGameLoop implements Runnable{
     protected void init() throws Exception {
         display.createDisplay();
         keyboardInput.init(display.getWindowHandle());
+        mouseInput.init(display.getWindowHandle());
         renderer.init(display.getWidth(), display.getHeight());
-        mouseInput.init(display);
         timer.init();
 
     }
@@ -181,8 +181,7 @@ public class MainGameLoop implements Runnable{
         player = new Player(bunny, new Vector3f(0, 0, 0), 0,-45, 0,1);
 
 
-        camera = new Camera();
-        camera.moveY(10);
+        camera = new Camera(player);
 
         while (running && !display.windowShouldClose()) {
 
@@ -226,10 +225,12 @@ public class MainGameLoop implements Runnable{
     
     public void input() {
         player.input();
+        camera.input();
     }
 
     protected void update(float interval) {
         player.update(interval);
+        camera.update(interval);
 
     }
 

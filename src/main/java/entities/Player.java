@@ -76,4 +76,7 @@ public class Player extends Entity {
         }
 
     }
+    public float getyOffset(){
+        return yOffset;
+    }
 }

@@ -2,22 +2,20 @@ package utils;
 
 import org.joml.Vector2d;
 import org.joml.Vector2f;
-import renderEngine.DisplayManager;
 import static org.lwjgl.glfw.GLFW.*;
 
 
 public class MouseInput {
-
-    private final Vector2d previousPos = new Vector2d(-1, -1);;
-
-    private final Vector2d currentPos = new Vector2d(0, 0);
-
-    private final Vector2f displVec = new Vector2f();
-
-    private float zoomOffset = 0;
     private static MouseInput instance;
 
+    private  Vector2f mousePos = new Vector2f(0, 0);
+    private  Vector2f mouseOffset = new Vector2f(0,0);
+    private final float ZOOM_DIRECTION = -1;
+    private float zoomOffset = 0;
+    private long windowHandle;
+
     private MouseInput() {}
+
     public static MouseInput getInstance(){
         if(instance == null){
             instance = new MouseInput();
@@ -25,16 +23,21 @@ public class MouseInput {
         return instance;
     }
 
-    public void init(DisplayManager display) {
-        glfwSetScrollCallback(display.getWindowHandle(), (windowHandle, xoffset, yoffset) -> {
-            zoomOffset = (float) yoffset * -1;
+    public void init(long handler) {
+        this.windowHandle = handler;
+
+        glfwSetScrollCallback(handler, (windowHandle, xoffset, yoffset) -> {
+            zoomOffset = (float) yoffset * ZOOM_DIRECTION;
         });
-    }
 
-    public Vector2f getDisplVec() {
-        return displVec;
-    }
+        glfwSetCursorPosCallback(handler, (windowHandle, xPos, yPos)->{
+            this.mouseOffset.x = this.mousePos.x - (float) xPos;
+            this.mouseOffset.y = this.mousePos.y - (float) yPos;
+            this.mousePos.x = (float) xPos;
+            this.mousePos.y = (float) yPos;
+        });
 
+    }
 
     public boolean zoom() {
         return zoomOffset != 0.0;
@@ -44,6 +47,17 @@ public class MouseInput {
         float offset = zoomOffset;
         zoomOffset = 0;
         return offset;
+    }
+
+    public Vector2f getOffset(){
+        return mouseOffset;
+    }
+    public float getYOffset(){return mouseOffset.y;}
+    public float getXOffset(){return mouseOffset.x;}
+
+
+    public boolean isKeyPressed(int keyCode) {
+        return glfwGetMouseButton(this.windowHandle, keyCode) == GLFW_PRESS;
     }
 }
 
