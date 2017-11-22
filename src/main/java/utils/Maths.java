@@ -18,6 +18,15 @@ public class Maths {
 
         return matrix;
     }
+
+    public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
+        Matrix4f matrix = new Matrix4f();
+        matrix.identity()
+                .translate(translation.x, translation.y, 0f)
+                .scale(new Vector3f(scale.x, scale.y, 1f));
+        return matrix;
+    }
+
     public static Matrix4f createViewMatrix(Camera camera) {
         Matrix4f viewMatrix = new Matrix4f();
         Vector3f cameraPos = camera.getPosition();

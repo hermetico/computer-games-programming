@@ -3,6 +3,7 @@ package shaders;
 import entities.Camera;
 import entities.Light;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import utils.Maths;
 
@@ -20,6 +21,8 @@ public class StaticShader extends ShaderProgram {
     private int location_reflectivity;
     private int location_useFakeLighting;
     private int location_skyColour;
+    private int location_numberOfRows;
+    private int location_offset;
 
     public StaticShader(){
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -45,6 +48,8 @@ public class StaticShader extends ShaderProgram {
         location_reflectivity = super.getUniformLocation("reflectivity");
         location_useFakeLighting = super.getUniformLocation("useFakeLighting");
         location_skyColour = super.getUniformLocation("skyColour");
+        location_numberOfRows = super.getUniformLocation("numberOfRows");
+        location_offset = super.getUniformLocation("offset");
     }
 
     public void loadSkyColour(float r, float g, float b){
@@ -59,6 +64,7 @@ public class StaticShader extends ShaderProgram {
         super.loadFloat(location_shineDamper, shineDamper);
         super.loadFloat(location_reflectivity, reflectivity);
     }
+
     public void loadTransformationMatrix(Matrix4f matrix){
         super.loadMatrix(location_transformationMatrix,matrix);
 
@@ -75,6 +81,13 @@ public class StaticShader extends ShaderProgram {
 
     }
 
+    public void loadNumberOfRows(int numberOfRows){
+        super.loadFloat(location_numberOfRows, numberOfRows);
+    }
+
+    public void loadOffset(float x, float y){
+        super.load2DVector(location_offset, new Vector2f(x, y));
+    }
 
     public void loadProjectionMatrix(Matrix4f matrix){
         super.loadMatrix(location_projectionMatrix, matrix);

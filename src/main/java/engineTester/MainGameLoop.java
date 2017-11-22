@@ -1,10 +1,13 @@
 package engineTester;
 
+import GUI.GUIRenderer;
+import GUI.GUITexture;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
 import models.TexturedModel;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import renderEngine.*;
@@ -39,6 +42,7 @@ public class MainGameLoop implements Runnable{
 
     Loader loader;
     MasterRenderer renderer;
+    GUIRenderer guiRenderer;
 
     Camera camera;
     MouseInput mouseInput;
@@ -46,6 +50,7 @@ public class MainGameLoop implements Runnable{
 
     List<Entity> allItems;
     Terrain terrain;
+    List<GUITexture> guis;
     Terrain terrain2;
     Player player;
     public static void main(String[] args){
@@ -123,8 +128,10 @@ public class MainGameLoop implements Runnable{
         texture.setUseFakeLighting(true);
 
 
+        ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
+        fernAtlasTexture.setNumberOfRows(2);
         RawModel fern = OBJLoader.loadObjModel("fern", loader);
-        TexturedModel fernModel = new TexturedModel(fern, new ModelTexture(loader.loadTexture("fern")));
+        TexturedModel fernModel = new TexturedModel(fern,fernAtlasTexture);
         texture = fernModel.getTexture();
         texture.setShineDamper(5);
         texture.setReflectivity(1);
@@ -156,7 +163,8 @@ public class MainGameLoop implements Runnable{
                     0,
                     random.nextFloat() * 180f,
                     0,
-                    1f));
+                    1f,
+                    random.nextInt(4)));
         }
 
         for(int i = 0; i < 100; i++){
@@ -173,8 +181,9 @@ public class MainGameLoop implements Runnable{
 
         light = new Light(new Vector3f(200,200,100), new Vector3f(1,1,1));
 
-
-
+        guis = new ArrayList<>();
+        GUITexture gui = new GUITexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+        guis.add(gui);
 
 
         RawModel bunnyModel = OBJLoader.loadObjModel("bunny", loader);
@@ -184,6 +193,7 @@ public class MainGameLoop implements Runnable{
 
 
         camera = new Camera(player);
+        guiRenderer = new GUIRenderer(loader);
 
         while (running && !display.windowShouldClose()) {
 
@@ -209,6 +219,7 @@ public class MainGameLoop implements Runnable{
             }
         }
 
+        guiRenderer.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
     }
@@ -250,6 +261,7 @@ public class MainGameLoop implements Runnable{
             renderer.processEntity(entity);
         }
         renderer.render(light, camera);
+        guiRenderer.render(guis);
         display.updateDisplay();
 
     }
