@@ -51,7 +51,7 @@ public class MainGameLoop implements Runnable{
     List<Entity> allItems;
     Terrain terrain;
     List<GUITexture> guis;
-    Terrain terrain2;
+    List<Light> lights;
     Player player;
     public static void main(String[] args){
         try {
@@ -149,15 +149,15 @@ public class MainGameLoop implements Runnable{
         allItems = new ArrayList<Entity>();
         Random random = new Random();
         for(int i = 0; i < 50; i++){
-            float x = random.nextFloat() * 100 -50;
-            float z = random.nextFloat() * -300;
+            float x = random.nextFloat() * 1000;
+            float z = random.nextFloat() * -1000;
             float y = terrain.getTerrainHeight(x, z);
             allItems.add(new Entity(grassModel, new Vector3f(x,y,z),
                     0, random.nextFloat() * 180f,0,1f));
         }
         for(int i = 0; i < 100; i++){
-            float x = random.nextFloat() * 500 - 250;
-            float z = random.nextFloat() * -400;
+            float x = random.nextFloat() * 1000;
+            float z = random.nextFloat() * -1000;
             float y = terrain.getTerrainHeight(x, z);
             allItems.add(new Entity(fernModel, new Vector3f(x,y,z),
                     0,
@@ -168,8 +168,8 @@ public class MainGameLoop implements Runnable{
         }
 
         for(int i = 0; i < 100; i++){
-            float x = random.nextFloat() * 500 - 250;
-            float z = random.nextFloat() * -400;
+            float x = random.nextFloat() * 1000;
+            float z = random.nextFloat() * -1000;
             float y = terrain.getTerrainHeight(x, z);
             allItems.add(new Entity(treeModel, new Vector3f(x,y,z),
                     0,
@@ -178,8 +178,13 @@ public class MainGameLoop implements Runnable{
                     1f));
         }
 
+        lights = new ArrayList<>();
 
-        light = new Light(new Vector3f(200,200,100), new Vector3f(1,1,1));
+        light = new Light(new Vector3f(0,10000,-7000), new Vector3f(0.4f,0.4f,0.4f));
+        lights.add(light);
+        lights.add(new Light(new Vector3f(100,20,-100), new Vector3f(2,0,0), new Vector3f(0.001f, 0.0001f, 0.002f)));
+        lights.add(new Light(new Vector3f(200,15,-700), new Vector3f(0,2,2), new Vector3f(0.001f, 0.0001f, 0.002f)));
+        lights.add(new Light(new Vector3f(600,20,-200), new Vector3f(2,2,0), new Vector3f(0.001f, 0.0001f, 0.002f)));
 
         guis = new ArrayList<>();
         GUITexture gui = new GUITexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
@@ -260,7 +265,7 @@ public class MainGameLoop implements Runnable{
         for(Entity entity : allItems){
             renderer.processEntity(entity);
         }
-        renderer.render(light, camera);
+        renderer.render(lights, camera);
         guiRenderer.render(guis);
         display.updateDisplay();
 
