@@ -8,6 +8,9 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import shaders.StaticShader;
 import shaders.TerrainShader;
+import skybox.Skybox;
+import skybox.SkyboxRenderer;
+import skybox.SkyboxShader;
 import terrains.Terrain;
 
 import java.util.ArrayList;
@@ -19,27 +22,28 @@ public class MasterRenderer {
     private static final float FOV = 70; // field of view
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
-    private static final float RED = 0.5f;
-    private static final float GREEN = 0.5f;
-    private static final float BLUE = 0.5f;
+    private static final float RED = 0f;
+    private static final float GREEN = 0f;
+    private static final float BLUE = 0f;
 
     private Matrix4f projectionMatrix;
     private StaticShader entityShader;
     private EntityRenderer entityRenderer;
     private TerrainRenderer terrainRenderer;
+    private Skybox skybox;
     private TerrainShader terrainShader;
     private Map<TexturedModel, List<Entity>> entities;
     private List<Terrain> terrains;
 
 
-    public void init(float displayWidth, float displayHeight){
+    public void init(float displayWidth, float displayHeight, Skybox skybox){
         entityShader = new StaticShader();
         entityRenderer = new EntityRenderer(entityShader);
         terrainShader = new TerrainShader();
         terrainRenderer = new TerrainRenderer(terrainShader);
-
-        entities = new HashMap<TexturedModel, List<Entity>>();
-        terrains = new ArrayList<Terrain>();
+        this.skybox = skybox;
+        entities = new HashMap<>();
+        terrains = new ArrayList<>();
 
         updateProjectionMatrix(displayWidth, displayHeight);
 
@@ -50,6 +54,7 @@ public class MasterRenderer {
         createProjectionMatrix(displayWidth, displayHeight);
         entityRenderer.loadProjectionMatrix(this.projectionMatrix);
         terrainRenderer.loadProjectionMatrix(this.projectionMatrix);
+        skybox.getRenderer().loadProjectionMatrix(this.projectionMatrix);
 
     }
 
@@ -79,6 +84,8 @@ public class MasterRenderer {
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);
         terrainShader.stop();
+
+        skybox.render(camera, RED, GREEN, BLUE);
 
         terrains.clear();
         entities.clear();

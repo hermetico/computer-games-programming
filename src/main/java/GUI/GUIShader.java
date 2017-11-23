@@ -18,7 +18,7 @@ public class GUIShader extends ShaderProgram {
     }
 
     @Override
-    protected void getAllUniformLocation() {
+    protected void getAllUniformLocations() {
         location_transformationMatrix = super.getUniformLocation("transformationMatrix");
     }
 

@@ -1,14 +1,19 @@
 package renderEngine;
 
+import de.matthiasmann.twl.utils.PNGDecoder;
 import models.RawModel;
 import org.lwjgl.opengl.*;
 import textures.Texture;
 import org.lwjgl.BufferUtils;
+import textures.TextureData;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
 
 
 public class Loader {
@@ -27,11 +32,11 @@ public class Loader {
         return new RawModel(vaoID, indices.length);
     }
 
-    public RawModel loadToVAO( float[] positions){
+    public RawModel loadToVAO( float[] positions, int dimensions){
         int vaoID = createVAO();
-        this.storeDataInAttributeList(0,2, positions);
+        this.storeDataInAttributeList(0,dimensions, positions);
         unbindVAO();
-        return new RawModel(vaoID, positions.length / 2);
+        return new RawModel(vaoID, positions.length / dimensions);
     }
 
     public int loadTexture(String fileName){
@@ -48,6 +53,43 @@ public class Loader {
         textures.add(textureID);
         return textureID;
     }
+
+    private TextureData decodeTextureFile(String fileName) {
+        int width = 0;
+        int height = 0;
+        ByteBuffer buffer = null;
+        try {
+            PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream("/textures/" + fileName + ".png"));
+            width = decoder.getWidth();
+            height = decoder.getHeight();
+            buffer = ByteBuffer.allocateDirect(4 * width * height);
+            decoder.decode(buffer, width * 4, PNGDecoder.Format.RGBA);
+            buffer.flip();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Unable to load texture " + fileName);
+            System.exit(-1);
+        }
+        return new TextureData(buffer, width, height);
+    }
+
+    public int loadCubeMap( String[] textureFiles){
+        int textID = GL11.glGenTextures();
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textID);
+        for(int i = 0; i < textureFiles.length; i++){
+            TextureData data = decodeTextureFile( textureFiles[i]);
+            GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, data.getWidth(), data.getHeight(), 0,
+                    GL_RGBA, GL_UNSIGNED_BYTE, data.getBuffer());
+        }
+        GL11.glTexParameterf(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameterf(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+        textures.add(textID);
+        return textID;
+    }
+
     public void cleanUp(){
         for(int  vao: vaos){
             GL30.glDeleteVertexArrays(vao);

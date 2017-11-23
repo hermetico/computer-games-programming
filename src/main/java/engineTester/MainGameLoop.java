@@ -11,6 +11,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import renderEngine.*;
+import skybox.Skybox;
 import terrains.Terrain;
 import textures.ModelTexture;
 import models.RawModel;
@@ -52,6 +53,7 @@ public class MainGameLoop implements Runnable{
     Terrain terrain;
     List<GUITexture> guis;
     List<Light> lights;
+    Skybox skybox;
     Player player;
     public static void main(String[] args){
         try {
@@ -68,10 +70,12 @@ public class MainGameLoop implements Runnable{
         gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
         display = new DisplayManager(windowTitle, width, height, vSync);
         timer = new Timer();
+
         renderer = new MasterRenderer();
         loader = new Loader();
         mouseInput = MouseInput.getInstance();
         keyboardInput = KeyboardInput.getInstance();
+
     }
 
     public void start() {
@@ -97,7 +101,8 @@ public class MainGameLoop implements Runnable{
         display.createDisplay();
         keyboardInput.init(display.getWindowHandle());
         mouseInput.init(display.getWindowHandle());
-        renderer.init(display.getWidth(), display.getHeight());
+        skybox = new Skybox(loader);
+        renderer.init(display.getWidth(), display.getHeight(), skybox);
         timer.init();
 
     }
@@ -249,6 +254,7 @@ public class MainGameLoop implements Runnable{
     protected void update(float interval) {
         player.update(interval, terrain);
         camera.update(interval);
+        skybox.update(interval);
 
     }
 
