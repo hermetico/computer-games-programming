@@ -51,8 +51,8 @@ public class EntityRenderer {
             GL30.glBindVertexArray(box.getVAOID());
             GL20.glEnableVertexAttribArray(0); // boundingBox positions
 
-            Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
-                    entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale() );
+            Matrix4f transformationMatrix = Maths.createBoundingBoxTransformationMatrix(entity.getPosition(),
+                    entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale(), box.getScale(), box.getCenter());
 
             bShader.loadTransformationMatrix(transformationMatrix);
 

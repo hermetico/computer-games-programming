@@ -1,5 +1,9 @@
 package entities;
 
+import org.joml.Vector3f;
+
+import java.util.Vector;
+
 public class BoundingBox {
 
     // lines
@@ -29,6 +33,9 @@ public class BoundingBox {
 
     private int VAOID = 0;
 
+    private Vector3f scale = new Vector3f(1,1,1);
+    private Vector3f center = new Vector3f(0,0,0);
+
     public float[] getBoundingPositions() {
         return boundingPositions;
     }
@@ -47,5 +54,21 @@ public class BoundingBox {
 
     public void setVAOID(int VAOID) {
         this.VAOID = VAOID;
+    }
+
+    public Vector3f getScale() {
+        return scale;
+    }
+
+    public void setScale(Vector3f scale) {
+        this.scale = scale;
+    }
+
+    public Vector3f getCenter() {
+        return center;
+    }
+
+    public void setCenter(Vector3f center) {
+        this.center = center;
     }
 }
