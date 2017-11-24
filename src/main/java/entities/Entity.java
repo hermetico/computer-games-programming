@@ -1,14 +1,16 @@
 package entities;
 
+import entities.extensions.Selectable;
 import models.TexturedModel;
 import org.joml.Vector3f;
 
-public class Entity {
+public class Entity implements Selectable{
     private TexturedModel model;
     private Vector3f position;
     private float rotX, rotY, rotZ;
     private float scale;
     private int textureIndex = 0;
+    protected String entityDescription = "Not defined";
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         this.model = model;
@@ -17,6 +19,15 @@ public class Entity {
         this.rotY = rotY;
         this.rotZ = rotZ;
         this.scale = scale;
+    }
+    public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, String description) {
+        this.model = model;
+        this.position = position;
+        this.rotX = rotX;
+        this.rotY = rotY;
+        this.rotZ = rotZ;
+        this.scale = scale;
+        this.entityDescription = description;
     }
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, int textureIndex) {
@@ -27,6 +38,17 @@ public class Entity {
         this.rotZ = rotZ;
         this.scale = scale;
         this.textureIndex = textureIndex;
+    }
+
+    public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, int textureIndex, String description) {
+        this.model = model;
+        this.position = position;
+        this.rotX = rotX;
+        this.rotY = rotY;
+        this.rotZ = rotZ;
+        this.scale = scale;
+        this.textureIndex = textureIndex;
+        this.entityDescription = description;
     }
 
 
@@ -60,6 +82,8 @@ public class Entity {
     public void setModel(TexturedModel model) {
         this.model = model;
     }
+
+
 
     public Vector3f getPosition() {
         return position;
@@ -99,5 +123,18 @@ public class Entity {
 
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    @Override
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    @Override
+    public void setSelected(Boolean selected) {
+
+    }
+    public String getEntityDescription(){
+        return entityDescription;
     }
 }

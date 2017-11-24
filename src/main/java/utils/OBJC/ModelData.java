@@ -1,4 +1,4 @@
-package utils.OBJConverter;
+package utils.OBJC;
 
 
 public class ModelData {

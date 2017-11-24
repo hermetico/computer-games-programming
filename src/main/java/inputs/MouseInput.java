@@ -1,6 +1,5 @@
-package utils;
+package inputs;
 
-import org.joml.Vector2d;
 import org.joml.Vector2f;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -14,6 +13,8 @@ public class MouseInput {
     private float zoomOffset = 0;
     private long windowHandle;
 
+    public static final int RIGHT_KEY = GLFW_MOUSE_BUTTON_RIGHT;
+    public static final int LEFT_KEY = GLFW_MOUSE_BUTTON_LEFT;
     private MouseInput() {}
 
     public static MouseInput getInstance(){
@@ -49,11 +50,10 @@ public class MouseInput {
         return offset;
     }
 
-    public Vector2f getOffset(){
-        return mouseOffset;
-    }
     public float getYOffset(){return mouseOffset.y;}
     public float getXOffset(){return mouseOffset.x;}
+    public float getX(){ return mousePos.x;}
+    public float getY(){ return mousePos.y;}
 
 
     public boolean isKeyPressed(int keyCode) {

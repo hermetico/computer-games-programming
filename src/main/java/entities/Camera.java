@@ -1,8 +1,8 @@
 package entities;
 
 import org.joml.Vector3f;
-import utils.KeyboardInput;
-import utils.MouseInput;
+import inputs.KeyboardInput;
+import inputs.MouseInput;
 import static org.lwjgl.glfw.GLFW.*;
 
 
@@ -89,14 +89,14 @@ public class Camera {
     }
 
     private void calculatePitch(){
-        if(mouseInput.isKeyPressed(GLFW_MOUSE_BUTTON_LEFT)){
+        if(mouseInput.isKeyPressed(MouseInput.LEFT_KEY)){
             pitch -=  mouseInput.getYOffset() * 0.1f;
 
         }
     }
 
     private void calculateAngleAroundPlayer(){
-        if(mouseInput.isKeyPressed(GLFW_MOUSE_BUTTON_LEFT)){
+        if(mouseInput.isKeyPressed(MouseInput.LEFT_KEY)){
             angleAroundPlayer += mouseInput.getXOffset() * 0.3f;
         }
     }

@@ -6,28 +6,29 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import entities.extensions.Selectable;
+import inputs.MousePicker;
+import inputs.SelectableDetector;
 import models.TexturedModel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import renderEngine.*;
 import skybox.Skybox;
 import terrains.Terrain;
 import textures.ModelTexture;
 import models.RawModel;
-import textures.TerrainTexture;
-import textures.TerrainTexturePack;
-import utils.KeyboardInput;
-import utils.MouseInput;
-import utils.OBJConverter.ModelData;
-import utils.OBJConverter.OBJFileLoader;
+import terrains.TerrainTexture;
+import terrains.TerrainTexturePack;
+import inputs.KeyboardInput;
+import inputs.MouseInput;
+import utils.OBJC.ModelData;
+import utils.OBJC.OBJFileLoader;
+import utils.OBJC.OBJLoader;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static org.lwjgl.glfw.GLFW.*;
 
 
 public class MainGameLoop implements Runnable{
@@ -55,6 +56,10 @@ public class MainGameLoop implements Runnable{
     List<Light> lights;
     Skybox skybox;
     Player player;
+    MousePicker picker;
+    List<Selectable> selectables;
+
+    SelectableDetector selection;
     public static void main(String[] args){
         try {
             boolean vSync = false;
@@ -68,7 +73,8 @@ public class MainGameLoop implements Runnable{
 
     public MainGameLoop(String windowTitle, int width, int height, boolean vSync) throws Exception {
         gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
-        display = new DisplayManager(windowTitle, width, height, vSync);
+        display = DisplayManager.getInstance();
+        display.setup(windowTitle, width, height, vSync);
         timer = new Timer();
 
         renderer = new MasterRenderer();
@@ -124,18 +130,25 @@ public class MainGameLoop implements Runnable{
         TerrainTexturePack texturePack= new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 
         terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
-        RawModel  model = OBJLoader.loadObjModel("grassModel", loader);
-        TexturedModel grassModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("grassTexture")));
+
+        // GRASS
+        ModelData dataGrass = OBJFileLoader.loadOBJ("grassModel");
+        RawModel grass = loader.loadToVAO(dataGrass.getVertices(), dataGrass.getTextureCoords(), dataGrass.getNormals(), dataGrass.getIndices());
+        TexturedModel grassModel = new TexturedModel(grass, new ModelTexture(loader.loadTexture("grassTexture")));
         ModelTexture  texture = grassModel.getTexture();
-        texture.setShineDamper(5);
-        texture.setReflectivity(1);
+        texture.setShineDamper(4);
+        texture.setReflectivity(2);
         texture.setHasTransparency(true);
         texture.setUseFakeLighting(true);
 
 
+        // FERNS
+        ModelData dataFern = OBJFileLoader.loadOBJ("fern");
+        RawModel fern = loader.loadToVAO(dataFern.getVertices(), dataFern.getTextureCoords(), dataFern.getNormals(), dataFern.getIndices());
+
         ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
         fernAtlasTexture.setNumberOfRows(2);
-        RawModel fern = OBJLoader.loadObjModel("fern", loader);
+
         TexturedModel fernModel = new TexturedModel(fern,fernAtlasTexture);
         texture = fernModel.getTexture();
         texture.setShineDamper(5);
@@ -143,9 +156,9 @@ public class MainGameLoop implements Runnable{
         texture.setHasTransparency(true);
         texture.setUseFakeLighting(true);
 
+        // TREES
         ModelData dataTree = OBJFileLoader.loadOBJ("lowPolyTree");
-        RawModel tree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(),
-                dataTree.getNormals(), dataTree.getIndices());
+        RawModel tree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(), dataTree.getNormals(), dataTree.getIndices());
         TexturedModel treeModel = new TexturedModel(tree, new ModelTexture(loader.loadTexture("lowPolyTree")));
         texture = treeModel.getTexture();
         texture.setShineDamper(100);
@@ -204,6 +217,14 @@ public class MainGameLoop implements Runnable{
 
         camera = new Camera(player);
         guiRenderer = new GUIRenderer(loader);
+        picker = new MousePicker(camera, renderer.getProjectionMatrix());
+
+        selection = new SelectableDetector();
+        selectables = new ArrayList<>();
+        selectables.add(player);
+        for(Entity entity : allItems){
+            selectables.add(entity);
+        }
 
         while (running && !display.windowShouldClose()) {
 
@@ -213,6 +234,7 @@ public class MainGameLoop implements Runnable{
 
 
             this.input();
+
 
 
             while (accumulator >= interval) {
@@ -249,12 +271,18 @@ public class MainGameLoop implements Runnable{
     public void input() {
         player.input();
         camera.input();
+        if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY)){
+            Vector3f ray = picker.computeMouseRay();
+            selection.selectGameItem(selectables, camera, ray);
+        }
+
     }
 
     protected void update(float interval) {
         player.update(interval, terrain);
         camera.update(interval);
         skybox.update(interval);
+        picker.update();
 
     }
 
@@ -262,6 +290,7 @@ public class MainGameLoop implements Runnable{
         if (display.isResized()) {
             display.resize();
             renderer.updateProjectionMatrix(display.getWidth(), display.getHeight());
+
             display.setResized(false);
         }
 

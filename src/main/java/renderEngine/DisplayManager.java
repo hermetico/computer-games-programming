@@ -11,7 +11,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class DisplayManager {
 
-    private final String title;
+    private static DisplayManager instance;
+    private String title;
 
     private int width;
 
@@ -23,7 +24,16 @@ public class DisplayManager {
 
     private boolean vSync;
 
-    public DisplayManager(String title, int width, int height, boolean vSync) {
+    private DisplayManager(){}
+
+    public static DisplayManager getInstance(){
+        if(instance == null){
+            instance = new DisplayManager();
+        }
+        return instance;
+    }
+
+    public void setup(String title, int width, int height, boolean vSync) {
         this.title = title;
         this.width = width;
         this.height = height;

@@ -1,8 +1,7 @@
-package utils.OBJConverter;
+package utils.OBJC;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import renderEngine.OBJLoader;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -3,7 +3,7 @@ package entities;
 import models.TexturedModel;
 import org.joml.Vector3f;
 import terrains.Terrain;
-import utils.KeyboardInput;
+import inputs.KeyboardInput;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -24,6 +24,7 @@ public class Player extends Entity {
     public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         super(model, position, rotX, rotY, rotZ, scale);
         keyboardInput = KeyboardInput.getInstance();
+        entityDescription = "The player";
     }
 
     public void update ( float interval, Terrain terrain){
