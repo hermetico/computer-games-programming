@@ -1,6 +1,7 @@
 package entities;
 
 import entities.extensions.Selectable;
+import models.RawEntity;
 import models.TexturedModel;
 import org.joml.Vector3f;
 
@@ -136,5 +137,20 @@ public class Entity implements Selectable{
     }
     public String getEntityDescription(){
         return entityDescription;
+    }
+
+    @Override
+    public RawEntity getRawEntity() {
+        return model.getRawEntity();
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return model.getRawEntity().getBoundingBox();
+    }
+
+    @Override
+    public Entity getEntity() {
+        return this;
     }
 }

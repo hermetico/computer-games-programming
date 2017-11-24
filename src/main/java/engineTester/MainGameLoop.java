@@ -9,6 +9,7 @@ import entities.Player;
 import entities.extensions.Selectable;
 import inputs.MousePicker;
 import inputs.SelectableDetector;
+import models.RawEntity;
 import models.TexturedModel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -131,51 +132,22 @@ public class MainGameLoop implements Runnable{
 
         terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
 
-        // GRASS
-        ModelData dataGrass = OBJFileLoader.loadOBJ("grassModel");
-        RawModel grass = loader.loadToVAO(dataGrass.getVertices(), dataGrass.getTextureCoords(), dataGrass.getNormals(), dataGrass.getIndices());
-        TexturedModel grassModel = new TexturedModel(grass, new ModelTexture(loader.loadTexture("grassTexture")));
-        ModelTexture  texture = grassModel.getTexture();
-        texture.setShineDamper(4);
-        texture.setReflectivity(2);
-        texture.setHasTransparency(true);
-        texture.setUseFakeLighting(true);
 
 
         // FERNS
         ModelData dataFern = OBJFileLoader.loadOBJ("fern");
-        RawModel fern = loader.loadToVAO(dataFern.getVertices(), dataFern.getTextureCoords(), dataFern.getNormals(), dataFern.getIndices());
+        RawEntity fern = loader.loadToVAO(dataFern);
 
         ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
         fernAtlasTexture.setNumberOfRows(2);
-
         TexturedModel fernModel = new TexturedModel(fern,fernAtlasTexture);
-        texture = fernModel.getTexture();
-        texture.setShineDamper(5);
-        texture.setReflectivity(1);
-        texture.setHasTransparency(true);
-        texture.setUseFakeLighting(true);
 
-        // TREES
-        ModelData dataTree = OBJFileLoader.loadOBJ("lowPolyTree");
-        RawModel tree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(), dataTree.getNormals(), dataTree.getIndices());
-        TexturedModel treeModel = new TexturedModel(tree, new ModelTexture(loader.loadTexture("lowPolyTree")));
-        texture = treeModel.getTexture();
-        texture.setShineDamper(100);
-        texture.setReflectivity(2);
-
-        allItems = new ArrayList<Entity>();
+        allItems = new ArrayList<>();
         Random random = new Random();
-        for(int i = 0; i < 50; i++){
-            float x = random.nextFloat() * 1000;
-            float z = random.nextFloat() * -1000;
-            float y = terrain.getTerrainHeight(x, z);
-            allItems.add(new Entity(grassModel, new Vector3f(x,y,z),
-                    0, random.nextFloat() * 180f,0,1f));
-        }
-        for(int i = 0; i < 100; i++){
-            float x = random.nextFloat() * 1000;
-            float z = random.nextFloat() * -1000;
+
+        for(int i = 0; i < 5; i++){
+            float x = random.nextFloat() * 25;
+            float z = random.nextFloat() * -25;
             float y = terrain.getTerrainHeight(x, z);
             allItems.add(new Entity(fernModel, new Vector3f(x,y,z),
                     0,
@@ -183,17 +155,6 @@ public class MainGameLoop implements Runnable{
                     0,
                     1f,
                     random.nextInt(4)));
-        }
-
-        for(int i = 0; i < 100; i++){
-            float x = random.nextFloat() * 1000;
-            float z = random.nextFloat() * -1000;
-            float y = terrain.getTerrainHeight(x, z);
-            allItems.add(new Entity(treeModel, new Vector3f(x,y,z),
-                    0,
-                    random.nextFloat() * 180f,
-                    0,
-                    1f));
         }
 
         lights = new ArrayList<>();
@@ -209,8 +170,9 @@ public class MainGameLoop implements Runnable{
         guis.add(gui);
 
 
-        RawModel bunnyModel = OBJLoader.loadObjModel("bunny", loader);
-        TexturedModel bunny = new TexturedModel(bunnyModel, new ModelTexture(
+        ModelData bunnyData = OBJFileLoader.loadOBJ("bunny");
+        RawEntity bunnyEntity = loader.loadToVAO(bunnyData);
+        TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
                 loader.loadTexture("purple")));
         player = new Player(bunny, new Vector3f(0, 0, 0), 0,-45, 0,1);
 
@@ -225,6 +187,7 @@ public class MainGameLoop implements Runnable{
         for(Entity entity : allItems){
             selectables.add(entity);
         }
+
 
         while (running && !display.windowShouldClose()) {
 
@@ -295,13 +258,15 @@ public class MainGameLoop implements Runnable{
         }
 
         renderer.processEntity(player);
-        renderer.processTerrain(terrain);
+        //renderer.processTerrain(terrain);
 
         for(Entity entity : allItems){
             renderer.processEntity(entity);
         }
+
         renderer.render(lights, camera);
-        guiRenderer.render(guis);
+        renderer.renderBoxes(selectables, camera);
+        //guiRenderer.render(guis);
         display.updateDisplay();
 
     }

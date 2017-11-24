@@ -86,7 +86,7 @@ public class SkyboxRenderer {
         shader.loadFogColor(r,g,b);
         GL30.glBindVertexArray(cube.getVaoID());
         GL20.glEnableVertexAttribArray(0);
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);;
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture);
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, cube.getVertexCount());
         GL20.glDisableVertexAttribArray(0);

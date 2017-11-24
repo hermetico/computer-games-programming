@@ -13,17 +13,26 @@ import java.util.Scanner;
 
 public abstract class ShaderProgram {
     private int programID;
+
     private int vertexShaderID;
     private int fragmentShaderID;
+
+
     private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     public ShaderProgram(String vertexFile, String fragmentFile){
         vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
         fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
 
-        programID =GL20.glCreateProgram();
+
+
+        programID = GL20.glCreateProgram();
+
         GL20.glAttachShader(programID, vertexShaderID);
         GL20.glAttachShader(programID, fragmentShaderID);
+
+
+
         bindAttributes();
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
@@ -50,8 +59,14 @@ public abstract class ShaderProgram {
         stop();
         GL20.glDetachShader(programID, vertexShaderID);
         GL20.glDetachShader(programID, fragmentShaderID);
+
+
+
         GL20.glDeleteProgram(vertexShaderID);
         GL20.glDeleteProgram(fragmentShaderID);
+
+
+
         GL20.glDeleteProgram(programID);
     }
 

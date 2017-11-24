@@ -1,13 +1,14 @@
 package renderEngine;
 
+import entities.BoundingBox;
 import entities.Entity;
+import entities.extensions.Selectable;
+import models.RawEntity;
 import models.RawModel;
 import models.TexturedModel;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.*;
+import shaders.BoundingBoxShader;
 import shaders.StaticShader;
 import textures.ModelTexture;
 import utils.Maths;
@@ -18,9 +19,11 @@ import java.util.Map;
 public class EntityRenderer {
 
     private StaticShader shader;
+    private BoundingBoxShader bShader;
 
-    public EntityRenderer(StaticShader shader){
+    public EntityRenderer(StaticShader shader, BoundingBoxShader bShader){
         this.shader = shader;
+        this.bShader = bShader;
     }
 
     public void render(Map<TexturedModel, List<Entity>> entities){
@@ -30,20 +33,52 @@ public class EntityRenderer {
 
             for(Entity entity:batch){
                 prepareInstance(entity);
-                drawInstance(model.getRawModel().getVertexCount());
+                drawInstance(model.getRawEntity().getVertexCount());
+
 
             }
             unbindTexturedModel();
         }
     }
 
+    public void renderBoundingBox(List<Selectable> selectables){
+
+        bShader.start();
+
+        for(Selectable selectable:selectables){
+            BoundingBox box = selectable.getBoundingBox();
+            Entity entity = selectable.getEntity();
+            GL30.glBindVertexArray(box.getVAOID());
+            GL20.glEnableVertexAttribArray(0); // boundingBox positions
+
+            Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
+                    entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale() );
+
+            bShader.loadTransformationMatrix(transformationMatrix);
+
+
+            GL11.glDrawElements(GL11.GL_LINES, box.getCount(),
+                    GL11.GL_UNSIGNED_INT, 0);
+
+
+        }
+
+        bShader.stop();
+
+    }
+
+    public void renderBoundingBox2(List<Selectable> selectables){
+
+    }
+
     private void prepareTexturedModel(TexturedModel model){
 
-        RawModel mesh = model.getRawModel();
+        RawModel mesh = model.getRawEntity();
         GL30.glBindVertexArray(mesh.getVaoID());
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
         GL20.glEnableVertexAttribArray(2);
+
         ModelTexture texture = model.getTexture();
         shader.loadNumberOfRows(texture.getNumberOfRows());
 
@@ -62,6 +97,7 @@ public class EntityRenderer {
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
         GL20.glDisableVertexAttribArray(2);
+
         //unbind
         GL30.glBindVertexArray(0);
 
@@ -71,6 +107,7 @@ public class EntityRenderer {
         GL11.glDrawElements(GL11.GL_TRIANGLES, numVertices,
                 GL11.GL_UNSIGNED_INT, 0);
     }
+
 
     private void prepareInstance(Entity entity){
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
@@ -83,6 +120,10 @@ public class EntityRenderer {
         shader.start();
         shader.loadProjectionMatrix(projectionMatrix);
         shader.stop();
+
+        bShader.start();
+        bShader.loadProjectionMatrix(projectionMatrix);
+        bShader.stop();
     }
 
 

@@ -1,11 +1,14 @@
 package renderEngine;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
+import entities.BoundingBox;
+import models.RawEntity;
 import models.RawModel;
 import org.lwjgl.opengl.*;
 import textures.Texture;
 import org.lwjgl.BufferUtils;
 import textures.TextureData;
+import utils.OBJC.ModelData;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -21,6 +24,28 @@ public class Loader {
     private List<Integer> vbos = new ArrayList<Integer>();
     private List<Integer> textures = new ArrayList<Integer>();
 
+    public RawEntity loadToVAO(ModelData model){
+
+        int vaoID = createVAO();
+        RawEntity resultEntity = new RawEntity(vaoID, model.getIndices().length, model.getVertices());
+        BoundingBox entityBounding = resultEntity.getBoundingBox();
+
+        bindIndicesBuffer(model.getIndices());
+        // data positions is in attribute 0
+        storeDataInAttributeList(0, 3, model.getVertices());
+        storeDataInAttributeList(1, 2, model.getTextureCoords());
+        storeDataInAttributeList(2, 3, model.getNormals());
+        unbindVAO();
+
+        vaoID = createVAO();
+        entityBounding.setVAOID(vaoID);
+        bindIndicesBuffer(entityBounding.getBoundingIndices());
+        storeDataInAttributeList(0, 3, entityBounding.getBoundingPositions());
+        unbindVAO();
+
+        return  resultEntity;
+    }
+
     public RawModel loadToVAO(float[] positions, float[] textureCoords,float[] normals, int[] indices ){
         int vaoID = createVAO();
         bindIndicesBuffer(indices);
@@ -32,12 +57,14 @@ public class Loader {
         return new RawModel(vaoID, indices.length);
     }
 
+
     public RawModel loadToVAO( float[] positions, int dimensions){
         int vaoID = createVAO();
         this.storeDataInAttributeList(0,dimensions, positions);
         unbindVAO();
         return new RawModel(vaoID, positions.length / dimensions);
     }
+
 
     public int loadTexture(String fileName){
         Texture texture = null;

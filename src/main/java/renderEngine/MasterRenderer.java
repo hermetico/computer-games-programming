@@ -3,9 +3,11 @@ package renderEngine;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.extensions.Selectable;
 import models.TexturedModel;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
+import shaders.BoundingBoxShader;
 import shaders.StaticShader;
 import shaders.TerrainShader;
 import skybox.Skybox;
@@ -28,6 +30,7 @@ public class MasterRenderer {
 
     private Matrix4f projectionMatrix;
     private StaticShader entityShader;
+    private BoundingBoxShader entityBoundingBoxShader;
     private EntityRenderer entityRenderer;
     private TerrainRenderer terrainRenderer;
     private Skybox skybox;
@@ -38,7 +41,8 @@ public class MasterRenderer {
 
     public void init(float displayWidth, float displayHeight, Skybox skybox){
         entityShader = new StaticShader();
-        entityRenderer = new EntityRenderer(entityShader);
+        entityBoundingBoxShader = new BoundingBoxShader();
+        entityRenderer = new EntityRenderer(entityShader, entityBoundingBoxShader);
         terrainShader = new TerrainShader();
         terrainRenderer = new TerrainRenderer(terrainShader);
         this.skybox = skybox;
@@ -92,6 +96,14 @@ public class MasterRenderer {
 
     }
 
+    public void renderBoxes(List<Selectable> selectables, Camera camera){
+
+        entityBoundingBoxShader.start();
+        entityBoundingBoxShader.loadViewMatrix(camera);
+        entityRenderer.renderBoundingBox(selectables);
+        entityBoundingBoxShader.stop();
+    }
+
     public void processEntity(Entity entity){
         TexturedModel entityModel = entity.getModel();
         List<Entity> batch = entities.get(entityModel);
@@ -124,6 +136,7 @@ public class MasterRenderer {
     public void cleanUp(){
         entityShader.cleanUp();
         terrainShader.cleanUp();
+        entityBoundingBoxShader.cleanUp();
     }
 
     public Matrix4f getProjectionMatrix() {

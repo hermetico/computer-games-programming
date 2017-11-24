@@ -3,16 +3,16 @@ package models;
 import textures.ModelTexture;
 
 public class TexturedModel {
-    private RawModel rawModel;
+    private RawEntity rawEntity;
     private ModelTexture texture;
 
-    public TexturedModel(RawModel model, ModelTexture texture){
-        this.rawModel = model;
+    public TexturedModel(RawEntity model, ModelTexture texture){
+        this.rawEntity = model;
         this.texture = texture;
     }
 
-    public RawModel getRawModel() {
-        return rawModel;
+    public RawEntity getRawEntity() {
+        return rawEntity;
     }
 
     public ModelTexture getTexture() {

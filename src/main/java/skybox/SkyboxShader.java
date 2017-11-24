@@ -1,10 +1,8 @@
 package skybox;
 
-import entities.Camera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import shaders.ShaderProgram;
-import utils.Maths;
 
 public class SkyboxShader extends ShaderProgram {
 
