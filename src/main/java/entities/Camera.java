@@ -89,14 +89,14 @@ public class Camera {
     }
 
     private void calculatePitch(){
-        if(mouseInput.isKeyPressed(MouseInput.LEFT_KEY)){
+        if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY)){
             pitch -=  mouseInput.getYOffset() * 0.1f;
 
         }
     }
 
     private void calculateAngleAroundPlayer(){
-        if(mouseInput.isKeyPressed(MouseInput.LEFT_KEY)){
+        if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY)){
             angleAroundPlayer += mouseInput.getXOffset() * 0.3f;
         }
     }

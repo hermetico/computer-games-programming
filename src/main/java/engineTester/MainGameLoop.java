@@ -61,6 +61,7 @@ public class MainGameLoop implements Runnable{
     List<Selectable> selectables;
 
     SelectableDetector selection;
+
     public static void main(String[] args){
         try {
             boolean vSync = false;
@@ -146,15 +147,17 @@ public class MainGameLoop implements Runnable{
         Random random = new Random();
 
         for(int i = 0; i < 5; i++){
-            float x = random.nextFloat() * 25;
-            float z = random.nextFloat() * -25;
+            float x = random.nextFloat() * 100;
+            float z = random.nextFloat() * -100;
             float y = terrain.getTerrainHeight(x, z);
-            allItems.add(new Entity(fernModel, new Vector3f(x,y,z),
+            Entity n = new Entity(fernModel, new Vector3f(x,y,z),
                     0,
                     random.nextFloat() * 180f,
                     0,
                     1f,
-                    random.nextInt(4)));
+                    random.nextInt(4));
+            n.setEntityDescription("fern " + i);
+            allItems.add(n);
         }
 
         lights = new ArrayList<>();
@@ -234,7 +237,7 @@ public class MainGameLoop implements Runnable{
     public void input() {
         player.input();
         camera.input();
-        if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY)){
+        if(mouseInput.isKeyPressed(MouseInput.LEFT_KEY)){
             Vector3f ray = picker.computeMouseRay();
             selection.selectGameItem(selectables, camera, ray);
         }
@@ -258,7 +261,7 @@ public class MainGameLoop implements Runnable{
         }
 
         renderer.processEntity(player);
-        //renderer.processTerrain(terrain);
+        renderer.processTerrain(terrain);
 
         for(Entity entity : allItems){
             renderer.processEntity(entity);
@@ -266,7 +269,7 @@ public class MainGameLoop implements Runnable{
 
         renderer.render(lights, camera);
         renderer.renderBoxes(selectables, camera);
-        //guiRenderer.render(guis);
+        guiRenderer.render(guis);
         display.updateDisplay();
 
     }

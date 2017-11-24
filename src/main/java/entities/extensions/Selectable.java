@@ -6,15 +6,13 @@ import models.RawEntity;
 import org.joml.Vector3f;
 
 public interface Selectable {
-    Boolean selected = false;
-
     Boolean getSelected();
     void setSelected(Boolean selected);
-    Vector3f getPosition();
-    float getScale();
+    Vector3f getBoxPosition();
+    Vector3f getBoxScale();
     String getEntityDescription();
-    RawEntity getRawEntity();
+    float getScale();
     BoundingBox getBoundingBox();
-    Entity getEntity();
+
 
 }

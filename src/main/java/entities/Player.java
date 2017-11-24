@@ -39,7 +39,9 @@ public class Player extends Entity {
         if (super.getPosition().y < terrainHeight){
             upwardsSpeed = 0;
             alreadyJumping = false;
-            super.getPosition().y = terrainHeight;
+            float diff = terrainHeight - super.getPosition().y;
+            super.increasePosition(0, diff, 0);
+
         }
 
 

@@ -11,7 +11,9 @@ public class Entity implements Selectable{
     private float rotX, rotY, rotZ;
     private float scale;
     private int textureIndex = 0;
+    protected BoundingBox boundingBox;
     protected String entityDescription = "Not defined";
+    protected boolean selected = false;
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         this.model = model;
@@ -60,6 +62,7 @@ public class Entity implements Selectable{
     }
 
     private void adaptBoundingBox(){
+        this.boundingBox  = new BoundingBox(model.getRawEntity().getBBVAO());
         float min_x, max_x, min_y, max_y, min_z, max_z;
 
         float[] vertices = model.getRawEntity().getPositions();
@@ -80,8 +83,10 @@ public class Entity implements Selectable{
 
         Vector3f size = new Vector3f(max_x-min_x, max_y-min_y, max_z-min_z);
         Vector3f center = new Vector3f((min_x+max_x)/2, (min_y+max_y)/2, (min_z+max_z)/2);
-        model.getRawEntity().getBoundingBox().setScale(size);
-        model.getRawEntity().getBoundingBox().setCenter(center);
+
+        this.boundingBox.setScale(size);
+        this.boundingBox.setPosition(center.add(this.position));
+        this.boundingBox.setRotation(new Vector3f(rotX, rotY, rotZ));
         
 
     }
@@ -97,16 +102,16 @@ public class Entity implements Selectable{
     }
 
     public void increasePosition(float dx, float dy, float dz){
-        this.position.x += dx;
-        this.position.y += dy;
-        this.position.z += dz;
-
+        this.position.add(dx, dy, dz);
+        this.boundingBox.getPosition().add(dx, dy, dz);
     }
 
     public void increaseRotation(float dx, float dy, float dz){
         this.rotX += dx;
         this.rotY += dy;
         this.rotZ += dz;
+
+        this.boundingBox.getRotation().add(dx, dy, dz);
     }
 
     public TexturedModel getModel() {
@@ -131,33 +136,25 @@ public class Entity implements Selectable{
         return rotX;
     }
 
-    public void setRotX(float rotX) {
-        this.rotX = rotX;
-    }
+
 
     public float getRotY() {
         return rotY;
     }
 
-    public void setRotY(float rotY) {
-        this.rotY = rotY;
-    }
+
 
     public float getRotZ() {
         return rotZ;
     }
 
-    public void setRotZ(float rotZ) {
-        this.rotZ = rotZ;
-    }
+
 
     public float getScale() {
         return scale;
     }
 
-    public void setScale(float scale) {
-        this.scale = scale;
-    }
+
 
     @Override
     public Boolean getSelected() {
@@ -166,24 +163,31 @@ public class Entity implements Selectable{
 
     @Override
     public void setSelected(Boolean selected) {
-
+        this.selected = selected;
     }
+
+    @Override
+    public Vector3f getBoxPosition() {
+        return this.boundingBox.getPosition();
+    }
+
+    @Override
+    public Vector3f getBoxScale() {
+        return this.boundingBox.getScale();
+    }
+
     public String getEntityDescription(){
         return entityDescription;
     }
 
-    @Override
-    public RawEntity getRawEntity() {
-        return model.getRawEntity();
-    }
+
 
     @Override
     public BoundingBox getBoundingBox() {
-        return model.getRawEntity().getBoundingBox();
+        return this.boundingBox;
     }
 
-    @Override
-    public Entity getEntity() {
-        return this;
+    public void setEntityDescription(String entityDescription) {
+        this.entityDescription = entityDescription;
     }
 }

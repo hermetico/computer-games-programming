@@ -4,8 +4,10 @@ import entities.Camera;
 import entities.Entity;
 import entities.extensions.Selectable;
 import org.joml.Intersectionf;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import utils.Maths;
 
 import java.util.List;
 
@@ -24,31 +26,37 @@ public class SelectableDetector {
         }
 
         public void selectGameItem(List<Selectable> selectables, Camera camera, Vector3f ray) {
-            selectGameItem(selectables, camera.getPosition(), ray);
+             selectGameItem(selectables, camera.getPosition(), ray);
         }
 
         protected boolean selectGameItem(List<Selectable> selectables, Vector3f center, Vector3f ray) {
+            int selectionOffset = 3;
             boolean selected = false;
             Selectable selectedEntity = null;
             float closestDistance = Float.POSITIVE_INFINITY;
 
+
             for (Selectable entity : selectables) {
                 entity.setSelected(false);
-                min.set(entity.getPosition());
-                max.set(entity.getPosition());
-                min.add(-entity.getScale(), -entity.getScale(), -entity.getScale());
-                max.add(entity.getScale(), entity.getScale(), entity.getScale());
+                min.set(entity.getBoxPosition());
+                max.set(entity.getBoxPosition());
+
+                min.add(-entity.getBoxScale().x/selectionOffset, -entity.getBoxScale().y/selectionOffset, -entity.getBoxScale().z/selectionOffset);
+                max.add(entity.getBoxScale().x/selectionOffset, entity.getBoxScale().y/selectionOffset, entity.getBoxScale().z/selectionOffset);
+
                 if (Intersectionf.intersectRayAab(center, ray, min, max, nearFar) && nearFar.x < closestDistance) {
                     closestDistance = nearFar.x;
                     selectedEntity = entity;
+
+
                 }
             }
 
             if (selectedEntity != null) {
                 selectedEntity.setSelected(true);
                 selected = true;
-                System.out.println(selectedEntity.getEntityDescription());
             }
             return selected;
         }
+
 }

@@ -97,11 +97,14 @@ public class MasterRenderer {
     }
 
     public void renderBoxes(List<Selectable> selectables, Camera camera){
-
-        entityBoundingBoxShader.start();
-        entityBoundingBoxShader.loadViewMatrix(camera);
-        entityRenderer.renderBoundingBox(selectables);
-        entityBoundingBoxShader.stop();
+        for(Selectable selectable: selectables) {
+            if(selectable.getSelected()) {
+                entityBoundingBoxShader.start();
+                entityBoundingBoxShader.loadViewMatrix(camera);
+                entityRenderer.renderBoundingBox(selectable);
+                entityBoundingBoxShader.stop();
+            }
+        }
     }
 
     public void processEntity(Entity entity){

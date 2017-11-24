@@ -28,7 +28,7 @@ public class Loader {
 
         int vaoID = createVAO();
         RawEntity resultEntity = new RawEntity(vaoID, model.getIndices().length, model.getVertices());
-        BoundingBox entityBounding = resultEntity.getBoundingBox();
+
 
         bindIndicesBuffer(model.getIndices());
         // data positions is in attribute 0
@@ -38,9 +38,9 @@ public class Loader {
         unbindVAO();
 
         vaoID = createVAO();
-        entityBounding.setVAOID(vaoID);
-        bindIndicesBuffer(entityBounding.getBoundingIndices());
-        storeDataInAttributeList(0, 3, entityBounding.getBoundingPositions());
+        resultEntity.setBBVAO(vaoID);
+        bindIndicesBuffer(BoundingBox.boundingIndices);
+        storeDataInAttributeList(0, 3, BoundingBox.boundingPositions);
         unbindVAO();
 
         return  resultEntity;

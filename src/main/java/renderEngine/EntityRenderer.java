@@ -41,18 +41,17 @@ public class EntityRenderer {
         }
     }
 
-    public void renderBoundingBox(List<Selectable> selectables){
+    public void renderBoundingBoxes(List<Selectable> selectables){
 
         bShader.start();
 
         for(Selectable selectable:selectables){
             BoundingBox box = selectable.getBoundingBox();
-            Entity entity = selectable.getEntity();
             GL30.glBindVertexArray(box.getVAOID());
             GL20.glEnableVertexAttribArray(0); // boundingBox positions
 
-            Matrix4f transformationMatrix = Maths.createBoundingBoxTransformationMatrix(entity.getPosition(),
-                    entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale(), box.getScale(), box.getCenter());
+            Matrix4f transformationMatrix = Maths.createTransformationMatrix(box.getPosition(),
+                    box.getRotation().x, box.getRotation().y, box.getRotation().z, box.getScale());
 
             bShader.loadTransformationMatrix(transformationMatrix);
 
@@ -62,6 +61,31 @@ public class EntityRenderer {
 
 
         }
+
+        bShader.stop();
+
+    }
+
+    public void renderBoundingBox(Selectable selectable){
+
+        bShader.start();
+
+
+        BoundingBox box = selectable.getBoundingBox();
+        GL30.glBindVertexArray(box.getVAOID());
+        GL20.glEnableVertexAttribArray(0); // boundingBox positions
+
+        Matrix4f transformationMatrix = Maths.createTransformationMatrix(box.getPosition(),
+                box.getRotation().x, box.getRotation().y, box.getRotation().z, box.getScale());
+
+        bShader.loadTransformationMatrix(transformationMatrix);
+
+
+        GL11.glDrawElements(GL11.GL_LINES, box.getCount(),
+                GL11.GL_UNSIGNED_INT, 0);
+
+
+
 
         bShader.stop();
 
