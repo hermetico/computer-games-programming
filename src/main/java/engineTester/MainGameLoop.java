@@ -2,19 +2,18 @@ package engineTester;
 
 import GUI.GUIRenderer;
 import GUI.GUITexture;
-import entities.Camera;
-import entities.Entity;
-import entities.Light;
-import entities.Player;
+import entities.*;
+import models.RawModel;
 import models.TexturedModel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
-import renderEngine.*;
+import renderEngine.DisplayManager;
+import renderEngine.Loader;
+import renderEngine.MasterRenderer;
+import renderEngine.OBJLoader;
 import skybox.Skybox;
 import terrains.Terrain;
 import textures.ModelTexture;
-import models.RawModel;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import utils.KeyboardInput;
@@ -22,12 +21,9 @@ import utils.MouseInput;
 import utils.OBJConverter.ModelData;
 import utils.OBJConverter.OBJFileLoader;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static org.lwjgl.glfw.GLFW.*;
 
 
 public class MainGameLoop implements Runnable{
@@ -50,6 +46,8 @@ public class MainGameLoop implements Runnable{
     Light light;
 
     List<Entity> allItems;
+    List<Entity> solids;
+    List<Sheep> sheeps;
     Terrain terrain;
     List<GUITexture> guis;
     List<Light> lights;
@@ -152,6 +150,7 @@ public class MainGameLoop implements Runnable{
         texture.setReflectivity(2);
 
         allItems = new ArrayList<Entity>();
+        solids = new ArrayList<Entity>();
         Random random = new Random();
         for(int i = 0; i < 50; i++){
             float x = random.nextFloat() * 1000;
@@ -172,15 +171,36 @@ public class MainGameLoop implements Runnable{
                     random.nextInt(4)));
         }
 
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < 30; i++){
             float x = random.nextFloat() * 1000;
             float z = random.nextFloat() * -1000;
             float y = terrain.getTerrainHeight(x, z);
+
+            solids.add(new Entity(treeModel, new Vector3f(x,y,z),
+                    0,
+                    random.nextFloat() * 180f,
+                    0,
+                    1f));
+
             allItems.add(new Entity(treeModel, new Vector3f(x,y,z),
                     0,
                     random.nextFloat() * 180f,
                     0,
                     1f));
+        }
+
+
+        sheeps = new ArrayList<Sheep>();
+
+        for(int i = 0; i < 30; i++) {
+
+            float x = random.nextFloat() * 1000;
+            float z = random.nextFloat() * -1000;
+            float y = terrain.getTerrainHeight(x, z);
+            RawModel sheepModel = OBJLoader.loadObjModel("cat", loader);
+            TexturedModel sheep = new TexturedModel(sheepModel, new ModelTexture(
+                    loader.loadTexture("purple")));
+            sheeps.add(new Sheep(sheep, new Vector3f(x, y, z), 0, random.nextFloat() * 180f, 0, 1f));
         }
 
         lights = new ArrayList<>();
@@ -196,7 +216,7 @@ public class MainGameLoop implements Runnable{
         guis.add(gui);
 
 
-        RawModel bunnyModel = OBJLoader.loadObjModel("bunny", loader);
+        RawModel bunnyModel = OBJLoader.loadObjModel("deer", loader);
         TexturedModel bunny = new TexturedModel(bunnyModel, new ModelTexture(
                 loader.loadTexture("purple")));
         player = new Player(bunny, new Vector3f(0, 0, 0), 0,-45, 0,1);
@@ -252,7 +272,10 @@ public class MainGameLoop implements Runnable{
     }
 
     protected void update(float interval) {
-        player.update(interval, terrain);
+        for(Sheep entity : sheeps) {
+            entity.update(interval, terrain);
+        }
+        player.update(interval, terrain, solids);
         camera.update(interval);
         skybox.update(interval);
 
@@ -271,6 +294,10 @@ public class MainGameLoop implements Runnable{
         for(Entity entity : allItems){
             renderer.processEntity(entity);
         }
+        for(Sheep entity : sheeps){
+            renderer.processEntity(entity);
+        }
+
         renderer.render(lights, camera);
         guiRenderer.render(guis);
         display.updateDisplay();
