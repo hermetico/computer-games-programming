@@ -269,7 +269,7 @@ public class MainGameLoop implements Runnable{
 
         renderer.render(lights, camera);
         renderer.renderBoxes(selectables, camera);
-        guiRenderer.render(guis);
+        //guiRenderer.render(guis);
         display.updateDisplay();
 
     }
