@@ -4,6 +4,7 @@ import entities.extensions.Selectable;
 import models.RawEntity;
 import models.TexturedModel;
 import org.joml.Vector3f;
+import collision.AABB;
 
 public class Entity implements Selectable{
     private TexturedModel model;
@@ -11,6 +12,7 @@ public class Entity implements Selectable{
     private float rotX, rotY, rotZ;
     private float scale;
     private int textureIndex = 0;
+    protected AABB bounds;
     protected BoundingBox boundingBox;
     protected String entityDescription = "Not defined";
     protected boolean selected = false;
@@ -34,6 +36,7 @@ public class Entity implements Selectable{
         this.scale = scale;
         this.entityDescription = description;
         adaptBoundingBox();
+        this.bounds = new AABB(position, 101, 101, 101);
     }
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, int textureIndex) {
@@ -44,6 +47,7 @@ public class Entity implements Selectable{
         this.rotZ = rotZ;
         this.scale = scale;
         this.textureIndex = textureIndex;
+        this.bounds = new AABB(position, 101, 101, 101);
 
         adaptBoundingBox();
     }
@@ -122,8 +126,6 @@ public class Entity implements Selectable{
         this.model = model;
     }
 
-
-
     public Vector3f getPosition() {
         return position;
     }
@@ -136,58 +138,33 @@ public class Entity implements Selectable{
         return rotX;
     }
 
-
+    public void setRotX(float rotX) {
+        this.rotX = rotX;
+    }
 
     public float getRotY() {
         return rotY;
     }
 
-
+    public void setRotY(float rotY) {
+        this.rotY = rotY;
+    }
 
     public float getRotZ() {
         return rotZ;
     }
 
-
+    public void setRotZ(float rotZ) {
+        this.rotZ = rotZ;
+    }
 
     public float getScale() {
         return scale;
     }
 
-
-
-    @Override
-    public Boolean getSelected() {
-        return selected;
+    public void setScale(float scale) {
+        this.scale = scale;
     }
 
-    @Override
-    public void setSelected(Boolean selected) {
-        this.selected = selected;
-    }
-
-    @Override
-    public Vector3f getBoxPosition() {
-        return this.boundingBox.getPosition();
-    }
-
-    @Override
-    public Vector3f getBoxScale() {
-        return this.boundingBox.getScale();
-    }
-
-    public String getEntityDescription(){
-        return entityDescription;
-    }
-
-
-
-    @Override
-    public BoundingBox getBoundingBox() {
-        return this.boundingBox;
-    }
-
-    public void setEntityDescription(String entityDescription) {
-        this.entityDescription = entityDescription;
-    }
+    public AABB get_bounds(){ return bounds; }
 }

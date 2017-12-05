@@ -2,14 +2,8 @@ package engineTester;
 
 import GUI.GUIRenderer;
 import GUI.GUITexture;
-import entities.Camera;
-import entities.Entity;
-import entities.Light;
-import entities.Player;
-import entities.extensions.Selectable;
-import inputs.MousePicker;
-import inputs.SelectableDetector;
-import models.RawEntity;
+import entities.*;
+import models.RawModel;
 import models.TexturedModel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -18,18 +12,19 @@ import skybox.Skybox;
 import terrains.Terrain;
 import textures.ModelTexture;
 import models.RawModel;
-import terrains.TerrainTexture;
-import terrains.TerrainTexturePack;
-import inputs.KeyboardInput;
-import inputs.MouseInput;
-import utils.OBJC.ModelData;
-import utils.OBJC.OBJFileLoader;
-import utils.OBJC.OBJLoader;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
+import utils.KeyboardInput;
+import utils.MouseInput;
+import utils.OBJConverter.ModelData;
+import utils.OBJConverter.OBJFileLoader;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 
 public class MainGameLoop implements Runnable{
@@ -52,16 +47,13 @@ public class MainGameLoop implements Runnable{
     Light light;
 
     List<Entity> allItems;
+    List<Entity> solids;
+    List<Sheep> sheeps;
     Terrain terrain;
     List<GUITexture> guis;
     List<Light> lights;
     Skybox skybox;
     Player player;
-    MousePicker picker;
-    List<Selectable> selectables;
-
-    SelectableDetector selection;
-
     public static void main(String[] args){
         try {
             boolean vSync = false;
@@ -160,6 +152,19 @@ public class MainGameLoop implements Runnable{
             allItems.add(n);
         }
 
+	// enemies
+        sheeps = new ArrayList<Sheep>();
+
+        for(int i = 0; i < 15; i++) {
+
+            float x = random.nextFloat() * 1000;
+            float z = random.nextFloat() * -1000;
+            float y = terrain.getTerrainHeight(x, z);
+            RawModel sheepModel = OBJLoader.loadObjModel("dragon", loader);
+            TexturedModel sheep = new TexturedModel(sheepModel, new ModelTexture(
+                    loader.loadTexture("purple")));
+            sheeps.add(new Sheep(sheep, new Vector3f(x, y, z), 0, random.nextFloat() * 180f, 0, 1f));
+        }
         lights = new ArrayList<>();
 
         light = new Light(new Vector3f(0,10000,-7000), new Vector3f(0.4f,0.4f,0.4f));
@@ -200,7 +205,6 @@ public class MainGameLoop implements Runnable{
 
 
             this.input();
-
 
 
             while (accumulator >= interval) {
@@ -245,7 +249,10 @@ public class MainGameLoop implements Runnable{
     }
 
     protected void update(float interval) {
-        player.update(interval, terrain);
+        for(Sheep entity : sheeps) {
+            entity.update(interval, terrain, player.getPosition());
+        }
+        player.update(interval, terrain, solids);
         camera.update(interval);
         skybox.update(interval);
         picker.update();
@@ -256,7 +263,6 @@ public class MainGameLoop implements Runnable{
         if (display.isResized()) {
             display.resize();
             renderer.updateProjectionMatrix(display.getWidth(), display.getHeight());
-
             display.setResized(false);
         }
 
@@ -264,6 +270,9 @@ public class MainGameLoop implements Runnable{
         renderer.processTerrain(terrain);
 
         for(Entity entity : allItems){
+            renderer.processEntity(entity);
+        }
+        for(Sheep entity : sheeps){
             renderer.processEntity(entity);
         }
 

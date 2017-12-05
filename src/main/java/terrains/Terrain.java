@@ -4,6 +4,8 @@ import models.RawModel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import renderEngine.Loader;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 import utils.Maths;
 
 import javax.imageio.ImageIO;
