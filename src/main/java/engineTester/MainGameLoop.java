@@ -192,12 +192,12 @@ public class MainGameLoop implements Runnable{
 
         sheeps = new ArrayList<Sheep>();
 
-        for(int i = 0; i < 30; i++) {
+        for(int i = 0; i < 15; i++) {
 
             float x = random.nextFloat() * 1000;
             float z = random.nextFloat() * -1000;
             float y = terrain.getTerrainHeight(x, z);
-            RawModel sheepModel = OBJLoader.loadObjModel("cat", loader);
+            RawModel sheepModel = OBJLoader.loadObjModel("dragon", loader);
             TexturedModel sheep = new TexturedModel(sheepModel, new ModelTexture(
                     loader.loadTexture("purple")));
             sheeps.add(new Sheep(sheep, new Vector3f(x, y, z), 0, random.nextFloat() * 180f, 0, 1f));
@@ -216,7 +216,7 @@ public class MainGameLoop implements Runnable{
         guis.add(gui);
 
 
-        RawModel bunnyModel = OBJLoader.loadObjModel("deer", loader);
+        RawModel bunnyModel = OBJLoader.loadObjModel("bunny", loader);
         TexturedModel bunny = new TexturedModel(bunnyModel, new ModelTexture(
                 loader.loadTexture("purple")));
         player = new Player(bunny, new Vector3f(0, 0, 0), 0,-45, 0,1);
@@ -273,7 +273,7 @@ public class MainGameLoop implements Runnable{
 
     protected void update(float interval) {
         for(Sheep entity : sheeps) {
-            entity.update(interval, terrain);
+            entity.update(interval, terrain, player.getPosition());
         }
         player.update(interval, terrain, solids);
         camera.update(interval);
