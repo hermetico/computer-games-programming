@@ -2,13 +2,15 @@ package entities;
 
 import models.TexturedModel;
 import org.joml.Vector3f;
+import collision.AABB;
 
 public class Entity {
-    private TexturedModel model;
-    private Vector3f position;
+    protected TexturedModel model;
+    protected Vector3f position;
     private float rotX, rotY, rotZ;
     private float scale;
     private int textureIndex = 0;
+    protected AABB bounds;
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         this.model = model;
@@ -17,6 +19,7 @@ public class Entity {
         this.rotY = rotY;
         this.rotZ = rotZ;
         this.scale = scale;
+        this.bounds = new AABB(position, 101, 101, 101);
     }
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, int textureIndex) {
@@ -27,6 +30,7 @@ public class Entity {
         this.rotZ = rotZ;
         this.scale = scale;
         this.textureIndex = textureIndex;
+        this.bounds = new AABB(position, 101, 101, 101);
     }
 
 
@@ -100,4 +104,6 @@ public class Entity {
     public void setScale(float scale) {
         this.scale = scale;
     }
+
+    public AABB get_bounds(){ return bounds; }
 }
