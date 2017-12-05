@@ -60,7 +60,7 @@ public class Player extends Entity {
         }
 
 
-    }
+
     public void input(){
         checkInputs();
     }
@@ -95,5 +95,15 @@ public class Player extends Entity {
     }
     public float getyOffset(){
         return yOffset;
+    }
+
+    private boolean collision(List<Entity> solids) {
+        boolean collision = false;
+        for (Entity temp : solids) {
+             if (this.bounds.collides(temp.bounds)){
+                 collision = true;
+             }
+        }
+        return collision;
     }
 }

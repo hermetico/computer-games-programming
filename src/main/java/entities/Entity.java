@@ -8,7 +8,7 @@ import collision.AABB;
 
 public class Entity implements Selectable{
     private TexturedModel model;
-    private Vector3f position;
+    protected Vector3f position;
     private float rotX, rotY, rotZ;
     private float scale;
     private int textureIndex = 0;
@@ -36,7 +36,7 @@ public class Entity implements Selectable{
         this.scale = scale;
         this.entityDescription = description;
         adaptBoundingBox();
-        this.bounds = new AABB(position, 101, 101, 101);
+
     }
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, int textureIndex) {
@@ -47,7 +47,6 @@ public class Entity implements Selectable{
         this.rotZ = rotZ;
         this.scale = scale;
         this.textureIndex = textureIndex;
-        this.bounds = new AABB(position, 101, 101, 101);
 
         adaptBoundingBox();
     }
@@ -91,8 +90,9 @@ public class Entity implements Selectable{
         this.boundingBox.setScale(size);
         this.boundingBox.setPosition(center.add(this.position));
         this.boundingBox.setRotation(new Vector3f(rotX, rotY, rotZ));
-        
 
+        //FIXME merge features boundingBox and bounds
+        this.bounds = new AABB(position, 101, 101, 101);
     }
 
     public float getTextureXOffset(){
@@ -158,8 +158,42 @@ public class Entity implements Selectable{
         this.rotZ = rotZ;
     }
 
+    @Override
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    @Override
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
+    }
+
+    @Override
+    public Vector3f getBoxPosition() {
+        return boundingBox.getPosition();
+    }
+
+    @Override
+    public Vector3f getBoxScale() {
+        return boundingBox.getScale();
+    }
+
+    @Override
+    public String getEntityDescription() {
+        return entityDescription;
+    }
+
+    public void setEntityDescription(String entityDescription) {
+        this.entityDescription = entityDescription;
+    }
+
     public float getScale() {
         return scale;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
     }
 
     public void setScale(float scale) {

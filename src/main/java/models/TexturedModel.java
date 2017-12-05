@@ -22,7 +22,7 @@ public class TexturedModel {
     public void setTexture(ModelTexture texture) {
         this.texture = texture;
     }
-    public void setRawModel(RawModel model){
-        this.rawModel = model;
+    public void setRawEntity(RawEntity model){
+        this.rawEntity = model;
     }
 }

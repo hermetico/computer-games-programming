@@ -1,13 +1,9 @@
 package entities;
 
-import models.RawModel;
 import models.TexturedModel;
 import org.joml.Vector3f;
-import renderEngine.Loader;
-import renderEngine.OBJLoader;
 import terrains.Terrain;
-import textures.ModelTexture;
-import utils.OBJConverter.OBJFileLoader;
+
 
 public class Sheep extends Entity {
 
@@ -57,7 +53,8 @@ public class Sheep extends Entity {
             if (super.getPosition().y < terrainHeight) {
                 upwardsSpeed = 0;
                 alreadyJumping = false;
-                super.getPosition().y = terrainHeight;
+                float diff = terrainHeight - super.getPosition().y;
+                super.increasePosition(0, diff, 0);
             }
         }
         else{
