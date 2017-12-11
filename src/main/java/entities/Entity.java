@@ -16,6 +16,7 @@ public class Entity implements Selectable{
     protected BoundingBox boundingBox;
     protected String entityDescription = "Not defined";
     protected boolean selected = false;
+    protected boolean debugSelected = false;
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         this.model = model;
@@ -95,6 +96,16 @@ public class Entity implements Selectable{
         this.bounds = new AABB(position, 101, 101, 101);
     }
 
+    protected boolean landingOnTerrain( float terrainHeight){
+        if (position.y < terrainHeight) {
+            float diff = terrainHeight - position.y;
+            increasePosition(0, diff, 0);
+            return true;
+        }
+
+        return false;
+    }
+
     public float getTextureXOffset(){
         int column = textureIndex % model.getTexture().getNumberOfRows();
         return (float) column / (float)model.getTexture().getNumberOfRows();
@@ -164,8 +175,18 @@ public class Entity implements Selectable{
     }
 
     @Override
+    public Boolean getDebugSelected() {
+        return debugSelected;
+    }
+
+    @Override
     public void setSelected(Boolean selected) {
         this.selected = selected;
+    }
+
+    @Override
+    public void setDebugSelected(Boolean selected) {
+        this.debugSelected = selected;
     }
 
     @Override

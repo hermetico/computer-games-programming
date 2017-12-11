@@ -98,7 +98,7 @@ public class MasterRenderer {
 
     public void renderBoxes(List<Selectable> selectables, Camera camera){
         for(Selectable selectable: selectables) {
-            if(selectable.getSelected()) {
+            if(selectable.getSelected() || selectable.getDebugSelected()){
                 entityBoundingBoxShader.start();
                 entityBoundingBoxShader.loadViewMatrix(camera);
                 entityRenderer.renderBoundingBox(selectable);

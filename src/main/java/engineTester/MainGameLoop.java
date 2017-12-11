@@ -38,6 +38,7 @@ public class MainGameLoop implements Runnable{
     private final Thread gameLoopThread;
 
     private final Timer timer;
+    private boolean debug = false;
 
     Loader loader;
     MasterRenderer renderer;
@@ -259,6 +260,15 @@ public class MainGameLoop implements Runnable{
     public void input() {
         player.input();
         camera.input();
+        if(keyboardInput.isKeyPressed(KeyboardInput.BOXES_KEY)){
+            debug = !debug;
+
+            for(Selectable selected: selectables){
+                selected.setDebugSelected(debug);
+            }
+
+        }
+
         if(mouseInput.isKeyPressed(MouseInput.LEFT_KEY)){
             Vector3f ray = picker.computeMouseRay();
             selection.selectGameItem(selectables, camera, ray);
