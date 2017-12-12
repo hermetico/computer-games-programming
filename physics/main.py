@@ -13,7 +13,7 @@ BLACK = 0, 0, 0
 WHITE = 255, 255, 255
 RED = 255, 0, 0
 GRAVITY = np.array((0, -9.1)) * 10
-TRANFORM = np.array((1, -1))
+TRANSFORM = np.array((1, -1))
 
 X = 0
 Y = 1
@@ -65,7 +65,7 @@ def setup():
 def accumulate_forces():
     for particle in particles:
         particle.acc = np.zeros(2)
-        particle.acc += GRAVITY * TRANFORM
+        particle.acc += GRAVITY * TRANSFORM
 
 
 def satisfy_constraints():
