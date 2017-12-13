@@ -6,7 +6,7 @@ import math
 
 
 SIZE = 35
-TOTAL = 10
+TOTAL = 5
 W = 640
 H = 480
 
@@ -20,7 +20,7 @@ TRANSFORM = np.array((1, -1))
 X = 0
 Y = 1
 
-FPS = 50
+FPS = 30
 pygame.init()
 screen = pygame.display.set_mode((W, H))
 #pygame.display.set_caption("Moving Box")
@@ -59,6 +59,20 @@ class Constraint(object):
         self.spring = spring
 
 
+class Collision(object):
+    def __init__(self, normal=None, depth=None, edge=None, vertex=None):
+        self.normal = normal
+        self.depth = depth
+        self.edge = edge
+        self.vertex = vertex
+
+
+class Edge(object):
+    def __init__(self, a, b, owner):
+        self.a = a
+        self.b = b
+        self.owner = owner
+
 class Square(object):
     def __init__(self):
         self.size = SIZE #random.randint(5, size)
@@ -66,6 +80,7 @@ class Square(object):
         self.color = BLACK
         self.center = np.zeros(2)
         self.constraints = []
+        self.edges = []
         self.set_constraints()
 
     def set(self, x, y):
@@ -78,6 +93,7 @@ class Square(object):
         for i in range(4):
             self.constraints.append(
                 Constraint(self.corners[i], self.corners[(i + 1) % 4], self.size))
+            self.edges.append(Edge(self.corners[i], self.corners[(i + 1) % 4], self))
 
         # diagonals
         self.constraints.append(
@@ -104,48 +120,21 @@ class Square(object):
         for corner in self.corners:
             corner.acc += force
 
-    def is_colliding(self, other):
-        s_max_x = self.max_axis(X)
-        s_max_y = self.max_axis(Y)
+    def project_along(self, axis):
+        dot_p = np.dot(self.corners[0].pos, axis)
 
-        s_min_x = self.min_axis(X)
-        s_min_y = self.min_axis(Y)
+        min_ = max_ = dot_p
+        for i in range(1, len(self.corners)):
+            dot_p = np.dot(self.corners[i].pos, axis)
+            min_ = min(dot_p, min_)
+            max_ = max(dot_p, max_)
 
-        o_max_x = other.max_axis(X)
-        o_max_y = other.max_axis(Y)
+        return min_, max_
 
-        o_min_x = other.min_axis(X)
-        o_min_y = other.min_axis(Y)
-
-        candidate = False
-        if s_min_x <= o_min_x and o_min_x <= s_max_x:
-            candidate = True
-
-        if o_min_x <= s_min_x and s_min_x <= o_max_x:
-            candidate = True
-
-        if candidate:
-            if s_min_y <= o_min_y and o_min_y <= s_max_y:
-                return True
-
-            if o_min_y <= s_min_y and s_min_y <= o_max_y:
-                return True
-
-        return False
-
-    def make_constraint(self, other):
-        ba, bb = self.corners[0], other.corners[0]
-        closest_distance = np.linalg.norm(ba.pos-bb.pos)
-        for acorner in self.corners:
-            for bcorner in other.corners:
-                a = acorner.pos
-                b = bcorner.pos
-                distance = np.linalg.norm(a-b)
-                if distance < closest_distance:
-                    closest_distance = distance
-                    ba, bb = acorner, bcorner
-
-        return Constraint(ba, bb, closest_distance)
+    def update_center(self):
+        self.center = np.array(
+            ((self.min_axis(X) + self.max_axis(X)) * 0.5,
+             (self.min_axis(Y) + self.max_axis(Y) * 0.5)))
 
     def accelerate(self, delta):
         for corner in self.corners:
@@ -205,22 +194,69 @@ class Square(object):
                 b.pos[Y] += y * factor * 0.5
 
 
-def external_constraint(constraint):
-    trick =  0.0000001
-    a = constraint.a
-    b = constraint.b
-    spring = constraint.spring
-    x = a.pos[X] - b.pos[X]
-    y = a.pos[Y] - b.pos[Y]
+def SAT_collision(a, b):
+    depth_ = float("inf")
+    normal_ = None
+    edge_ = None
 
+    for edge in a.edges + b.edges:
 
+        p0, p1 = edge.a, edge.b
+        # normal of the projections
+        perp = np.array([p0.pos[Y] - p1.pos[Y], p1.pos[X] - p0.pos[X]])
+        # do the normal
+        axis = perp * 1.0 / math.sqrt(perp[0] ** 2 + perp[1] ** 2)
 
-    factor = spring / 2.
+        a_min, a_max = a.project_along(axis)
+        b_min, b_max = b.project_along(axis)
 
-    a.pos[X] -= factor * 0.05
-    a.pos[Y] -= factor * 0.05
-    b.pos[X] += factor * 0.05
-    b.pos[Y] += factor * 0.05
+        if a_min < b_min:
+            distance = b_min - a_max
+        else:
+            distance = a_min - b_max
+
+        if distance > 0.0:
+            return None
+
+        elif math.fabs(distance) < depth_:
+            depth_ = math.fabs(distance)
+            normal_ = axis
+            edge_ = edge
+
+    col = Collision(normal_, depth_, edge_)
+
+    # swap bodies
+    if edge.owner != b:
+        temp = b
+        b = a
+        a = temp
+
+    n = np.dot(col.normal, a.center - b.center)
+    if n < 0:
+        # negate the axis
+        col.normal *= -1
+
+    smallestD = float("inf")
+    for corner in a.corners:
+        distance2 = np.dot(col.normal, corner.pos - b.center)
+        if distance2 < smallestD:
+            smallestD = distance2
+            col.vertex = corner
+
+    return col
+
+def resolve_collision( collision ):
+    response = np.array(collision.normal * collision.depth)
+    e1, e2 = collision.edge.a, collision.edge.b
+    if  math.fabs(e1.pos[X] - e2.pos[X]) > math.fabs(e1.pos[Y] - e2.pos[Y]):
+        T = (collision.vertex.pos[X] -  response[X] - e1.pos[X]) / e2.pos[X] - e1.pos[X]
+    else:
+        T = (collision.vertex.pos[Y] -  response[Y] - e1.pos[Y]) / e2.pos[Y] - e1.pos[Y]
+
+    factor = 1.0 / (T*T + ( 1 - T) * (1 - T))
+    e1.pos -= response * (1 - T ) * 0.5 * factor
+    e2.pos -= response * T  * 0.5 * factor
+    collision.vertex.pos += response * 0.5
 
 
 def setup():
@@ -229,8 +265,8 @@ def setup():
 
     random.seed()
     for i, square in enumerate(squares):
-        #square.set(random.randint(0, W), random.randint(0, H))
-        square.set(100 + 15 * i, 50 * i)
+        square.set(random.randint(0, W), random.randint(0, H))
+        #square.set(100 + 15 * i, 50 * i)
 
 
 
@@ -256,26 +292,28 @@ def internal_constraints():
 
 def collide():
     global collisions
-    trick =  0.0000001
+    for square in squares:
+        square.color = BLACK
+        square.update_center()
+
     for i in xrange(TOTAL):
         a = squares[i]
-        for j in xrange(i + 1, TOTAL):
+        for j in xrange(TOTAL):
             b = squares[j]
 
+            if a == b: continue
+
             # coarse grain
+            collision = SAT_collision(a, b)
+            if collision is not None:
+                resolve_collision(collision)
+                collisions.append(collision)
 
-            if a.is_colliding(b):
-                collisions.append(a.make_constraint(b))
-                a.color = RED
-                b.color = RED
-            else:
-                a.color = BLACK
-                b.color = BLACK
-    # fix constraints
-    for constraint in collisions:
-        external_constraint(constraint)
+                #a.color = RED
+                #b.color = RED
 
-    collisions = []
+    for collision in collisions:
+        resolve_collision(collision)
 
 def inertia(delta):
     for square in squares:
@@ -290,7 +328,6 @@ def step():
         gravity()
         accelerate(delta)
 
-
         world_constraints()
         internal_constraints()
         collide()
@@ -304,10 +341,10 @@ def draw():
     for square in squares:
         square.draw()
 
-    for collision in collisions:
-        pygame.draw.circle(screen, GREEN, collision, 2)
+    #for collision in collisions:
+    #    pygame.draw.circle(screen, GREEN, np.array(collision.vertex.pos, dtype=np.int), 2)
 
-    collisions = []
+    #collisions = []
 
 
 if __name__ == '__main__':
