@@ -85,7 +85,7 @@ def accelerate(delta):
 def world_constraints():
     for circle in circles:
         radius = circle.radius
-        circle.pos[X] = min(W - radius, max(circle.pos[X] + radius, radius) - radius)
+        circle.pos[X] = min(W - radius, max(circle.pos[X] + radius, 2 * radius) - radius)
         circle.pos[Y] = min(H - radius, max(circle.pos[Y] + radius, radius) - radius)
 
 
@@ -119,7 +119,7 @@ def inertia(delta):
 
 
 def step():
-    iterations = 1
+    iterations = 10
     delta = 1. / FPS / iterations
 
     for _ in xrange(iterations):
