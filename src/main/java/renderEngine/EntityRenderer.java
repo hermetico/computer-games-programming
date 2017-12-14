@@ -1,9 +1,8 @@
 package renderEngine;
 
-import entities.BoundingBox;
+import physics.AABB;
 import entities.Entity;
 import entities.extensions.Selectable;
-import models.RawEntity;
 import models.RawModel;
 import models.TexturedModel;
 import org.joml.Matrix4f;
@@ -41,39 +40,15 @@ public class EntityRenderer {
         }
     }
 
-    public void renderBoundingBoxes(List<Selectable> selectables){
-
-        bShader.start();
-
-        for(Selectable selectable:selectables){
-            BoundingBox box = selectable.getBoundingBox();
-            GL30.glBindVertexArray(box.getVAOID());
-            GL20.glEnableVertexAttribArray(0); // boundingBox positions
-
-            Matrix4f transformationMatrix = Maths.createTransformationMatrix(box.getPosition(),
-                    box.getRotation().x, box.getRotation().y, box.getRotation().z, box.getScale());
-
-            bShader.loadTransformationMatrix(transformationMatrix);
-
-
-            GL11.glDrawElements(GL11.GL_LINES, box.getCount(),
-                    GL11.GL_UNSIGNED_INT, 0);
-
-
-        }
-
-        bShader.stop();
-
-    }
 
     public void renderBoundingBox(Selectable selectable){
 
         bShader.start();
 
 
-        BoundingBox box = selectable.getBoundingBox();
+        AABB box = selectable.getAABB();
         GL30.glBindVertexArray(box.getVAOID());
-        GL20.glEnableVertexAttribArray(0); // boundingBox positions
+        GL20.glEnableVertexAttribArray(0); // AABB positions
 
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(box.getPosition(),
                 box.getRotation().x, box.getRotation().y, box.getRotation().z, box.getScale());
@@ -91,9 +66,7 @@ public class EntityRenderer {
 
     }
 
-    public void renderBoundingBox2(List<Selectable> selectables){
 
-    }
 
     private void prepareTexturedModel(TexturedModel model){
 

@@ -1,7 +1,5 @@
 package models;
 
-import entities.BoundingBox;
-
 public class RawEntity extends RawModel {
     private float[] positions;
     private int bbVao;

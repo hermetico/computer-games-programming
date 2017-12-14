@@ -1,8 +1,6 @@
 package entities.extensions;
 
-import entities.BoundingBox;
-import entities.Entity;
-import models.RawEntity;
+import physics.AABB;
 import org.joml.Vector3f;
 
 public interface Selectable {
@@ -14,7 +12,7 @@ public interface Selectable {
     Vector3f getBoxScale();
     String getEntityDescription();
     float getScale();
-    BoundingBox getBoundingBox();
+    AABB getAABB();
 
 
 }

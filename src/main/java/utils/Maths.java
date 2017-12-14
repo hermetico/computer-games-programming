@@ -21,6 +21,14 @@ public class Maths {
         return matrix;
     }
 
+    public static Matrix4f createAABBTransformationMatrix(float rx, float ry, float rz){
+        Matrix4f matrix = new Matrix4f();
+        matrix.identity()
+                .rotateX((float) Math.toRadians(rx))
+                .rotateY((float) Math.toRadians(ry))
+                .rotateZ((float) Math.toRadians(rz));
+        return matrix;
+    }
     public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, Vector3f scale){
         Matrix4f matrix = new Matrix4f();
         matrix.identity()

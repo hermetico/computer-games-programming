@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 import terrains.Terrain;
 
 
-public class Sheep extends Entity {
+public class Enemy extends Entity {
 
     private static final float RUN_SPEED = 50;
     private static final float TURN_SPEED  = 560;
@@ -19,7 +19,7 @@ public class Sheep extends Entity {
     private boolean alreadyJumping = false;
 
 
-    public Sheep(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+    public Enemy(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         super(model, position, rotX, rotY, rotZ, scale);
     }
 
@@ -30,6 +30,7 @@ public class Sheep extends Entity {
             if (true) {
                 this.jump();
             }
+
             super.increaseRotation(0, steering * interval, 0);
             float distance = currentSpeed * interval;
             float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY() + yOffset)));

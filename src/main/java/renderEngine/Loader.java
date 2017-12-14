@@ -1,7 +1,7 @@
 package renderEngine;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
-import entities.BoundingBox;
+import physics.AABB;
 import models.RawEntity;
 import models.RawModel;
 import org.lwjgl.opengl.*;
@@ -39,8 +39,8 @@ public class Loader {
 
         vaoID = createVAO();
         resultEntity.setBBVAO(vaoID);
-        bindIndicesBuffer(BoundingBox.boundingIndices);
-        storeDataInAttributeList(0, 3, BoundingBox.boundingPositions);
+        bindIndicesBuffer(AABB.boundingIndices);
+        storeDataInAttributeList(0, 3, AABB.boundingPositions);
         unbindVAO();
 
         return  resultEntity;

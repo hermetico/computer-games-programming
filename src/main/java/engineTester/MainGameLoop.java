@@ -9,7 +9,6 @@ import inputs.MouseInput;
 import inputs.MousePicker;
 import inputs.SelectableDetector;
 import models.RawEntity;
-import models.RawModel;
 import models.TexturedModel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -50,7 +49,7 @@ public class MainGameLoop implements Runnable{
 
     List<Entity> allItems;
     List<Entity> solids;
-    List<Sheep> sheeps;
+    List<Enemy> enemies;
     Terrain terrain;
     List<GUITexture> guis;
     List<Light> lights;
@@ -158,26 +157,27 @@ public class MainGameLoop implements Runnable{
         }
 
 	    // enemies
-        sheeps = new ArrayList<Sheep>();
-        ModelData dataSheep = OBJFileLoader.loadOBJ("dragon");
+        enemies = new ArrayList<Enemy>();
+        /*ModelData dataSheep = OBJFileLoader.loadOBJ("cube");
         RawEntity sheep = loader.loadToVAO(dataSheep);
 
-        ModelTexture sheepTexture = new ModelTexture(loader.loadTexture("purple"));
+        ModelTexture sheepTexture = new ModelTexture(loader.loadTexture("trencadis"));
         TexturedModel sheepModel = new TexturedModel(sheep,sheepTexture);
         for(int i = 0; i < 15; i++) {
 
             float x = random.nextFloat() * 1000;
             float z = random.nextFloat() * -1000;
             float y = terrain.getTerrainHeight(x, z);
-            Sheep s = new Sheep(sheepModel, new Vector3f(x,y,z),
+            Enemy s = new Enemy(sheepModel, new Vector3f(x,y,z),
                     0,
                     random.nextFloat() * 180f,
                     0,
                     1f);
 
             s.setEntityDescription("Enemy " + i);
-            sheeps.add(s);
+            enemies.add(s);
         }
+        */
         lights = new ArrayList<>();
 
         light = new Light(new Vector3f(0,10000,-7000), new Vector3f(0.4f,0.4f,0.4f));
@@ -191,13 +191,14 @@ public class MainGameLoop implements Runnable{
         guis.add(gui);
 
 
-        ModelData bunnyData = OBJFileLoader.loadOBJ("bunny");
+        ModelData bunnyData = OBJFileLoader.loadOBJ("cube");
         RawEntity bunnyEntity = loader.loadToVAO(bunnyData);
         TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
                 loader.loadTexture("purple")));
-        player = new Player(bunny, new Vector3f(0, 0, 0), 0,-45, 0,1);
+        player = new Player(bunny, new Vector3f(0, 0, 0), 0,0, 0,7f);
 
 
+        //camera = new Camera(enemies.get(0));
         camera = new Camera(player);
         guiRenderer = new GUIRenderer(loader);
         picker = new MousePicker(camera, renderer.getProjectionMatrix());
@@ -210,7 +211,7 @@ public class MainGameLoop implements Runnable{
             selectables.add(entity);
             solids.add(entity);
         }
-        for(Entity entity : sheeps){
+        for(Entity entity : enemies){
             selectables.add(entity);
             solids.add(entity);
         }
@@ -277,7 +278,7 @@ public class MainGameLoop implements Runnable{
     }
 
     protected void update(float interval) {
-        for(Sheep entity : sheeps) {
+        for(Enemy entity : enemies) {
             entity.update(interval, terrain, player.getPosition());
         }
         player.update(interval, terrain, solids);
@@ -300,7 +301,7 @@ public class MainGameLoop implements Runnable{
         for(Entity entity : allItems){
             renderer.processEntity(entity);
         }
-        for(Sheep entity : sheeps){
+        for(Enemy entity : enemies){
             renderer.processEntity(entity);
         }
 

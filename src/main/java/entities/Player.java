@@ -13,7 +13,7 @@ public class Player extends Entity {
     private KeyboardInput keyboardInput;
     private static final float RUN_SPEED = 50;
     private static final float TURN_SPEED  = 160;
-    private static final float yOffset = -90; // model y rotation offset
+    private static final float yOffset = 0; // model y rotation offset
     private static float GRAVITY = -95;
     private static final float JUMP_POWER = 55;
 
@@ -29,7 +29,9 @@ public class Player extends Entity {
     }
 
     public void update (float interval, Terrain terrain, List<Entity> solids) {
-        super.increaseRotation(0, currentTurnSpeed * interval, 0);
+        if(currentTurnSpeed != 0.0) {
+            super.increaseRotation(0, currentTurnSpeed * interval, 0);
+        }
         float distance = currentSpeed * interval;
         float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY() + yOffset)));
         float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY() + yOffset)));
