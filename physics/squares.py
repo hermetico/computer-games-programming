@@ -6,7 +6,7 @@ import math
 
 
 SIZE = 35
-TOTAL = 5
+TOTAL = 20
 W = 640
 H = 480
 
@@ -20,7 +20,7 @@ TRANSFORM = np.array((1, -1))
 X = 0
 Y = 1
 
-FPS = 30
+FPS = 25
 pygame.init()
 screen = pygame.display.set_mode((W, H))
 #pygame.display.set_caption("Moving Box")
@@ -34,10 +34,11 @@ squares = []
 collisions = []
 
 class Particle(object):
-    def __init__(self):
+    def __init__(self, owner):
         self.pos = np.zeros(2)
         self.old_pos = np.zeros(2)
         self.acc = np.zeros(2)
+        self.owner = owner
 
     def accelerate(self, delta):
         self.pos += self.acc * delta * delta
@@ -75,13 +76,14 @@ class Edge(object):
 
 class Square(object):
     def __init__(self):
-        self.size = SIZE #random.randint(5, size)
-        self.corners = [ Particle() for _ in xrange(4) ]
+        self.size = random.randint(5, SIZE)
+        self.corners = [ Particle(self) for _ in xrange(4) ]
         self.color = BLACK
         self.center = np.zeros(2)
         self.constraints = []
         self.edges = []
         self.set_constraints()
+        self.mass = self.size
 
     def set(self, x, y):
         self.center = np.array([x, y])
@@ -254,9 +256,9 @@ def resolve_collision( collision ):
         T = (collision.vertex.pos[Y] -  response[Y] - e1.pos[Y]) / e2.pos[Y] - e1.pos[Y]
 
     factor = 1.0 / (T*T + ( 1 - T) * (1 - T))
-    e1.pos -= response * (1 - T ) * 0.5 * factor
+    e1.pos -= response * (1 - T ) * 0.5 * factor #* 1. / e1.owner.mass # adds the mass of the owner
     e2.pos -= response * T  * 0.5 * factor
-    collision.vertex.pos += response * 0.5
+    collision.vertex.pos += response * 0.5 #* 1. / collision.vertex.owner.mass # here too
 
 
 def setup():
@@ -307,13 +309,7 @@ def collide():
             collision = SAT_collision(a, b)
             if collision is not None:
                 resolve_collision(collision)
-                collisions.append(collision)
 
-                #a.color = RED
-                #b.color = RED
-
-    for collision in collisions:
-        resolve_collision(collision)
 
 def inertia(delta):
     for square in squares:
@@ -321,7 +317,7 @@ def inertia(delta):
 
 
 def step():
-    iterations = 10
+    iterations = 2
     delta = 1. / FPS / iterations
 
     for _ in xrange(iterations):
@@ -330,9 +326,11 @@ def step():
 
         world_constraints()
         internal_constraints()
+        inertia(delta)
+
         collide()
 
-        inertia(delta)
+
         pass
 
 

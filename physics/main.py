@@ -70,7 +70,7 @@ def accumulate_forces():
 
 def satisfy_constraints():
     global picked
-    for _ in range(10):
+    for _ in range(2):
         for a, b in cloth.constraints:
             a.pos[X] = min(W, max(a.pos[X], 0))
             a.pos[Y] = min(H, max(a.pos[Y], 0))
