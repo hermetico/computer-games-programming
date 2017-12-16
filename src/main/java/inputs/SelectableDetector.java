@@ -3,25 +3,16 @@ package inputs;
 import entities.Camera;
 import entities.Entity;
 import entities.extensions.Selectable;
-import org.joml.Intersectionf;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import org.joml.*;
+import physics.AABB;
 import utils.Maths;
 
 import java.util.List;
 
 public class SelectableDetector {
-        private final Vector3f max;
-
-        private final Vector3f min;
-
         private final Vector2f nearFar;
 
-
         public SelectableDetector() {
-            min = new Vector3f();
-            max = new Vector3f();
             nearFar = new Vector2f();
         }
 
@@ -30,25 +21,27 @@ public class SelectableDetector {
         }
 
         protected boolean selectGameItem(List<Selectable> selectables, Vector3f center, Vector3f ray) {
-            int selectionOffset = 3;
             boolean selected = false;
             Selectable selectedEntity = null;
             float closestDistance = Float.POSITIVE_INFINITY;
 
 
-            for (Selectable entity : selectables) {
-                entity.setSelected(false);
-                min.set(entity.getBoxPosition());
-                max.set(entity.getBoxPosition());
+            for (Selectable selectable : selectables) {
+                selectable.setSelected(false);
 
-                min.add(-entity.getBoxScale().x/selectionOffset, -entity.getBoxScale().y/selectionOffset, -entity.getBoxScale().z/selectionOffset);
-                max.add(entity.getBoxScale().x/selectionOffset, entity.getBoxScale().y/selectionOffset, entity.getBoxScale().z/selectionOffset);
+                Entity entity = selectable.getEntity();
+                AABB aabb = selectable.getAABB();
+                Matrix4f rotationMatrix = Maths.createTransformationMatrix(entity.getPosition(), 0,0,0, entity.getScale());
+                
+                Vector4f min4 = rotationMatrix.transform(new Vector4f(aabb.getMin(), 1));
+                Vector4f max4 = rotationMatrix.transform(new Vector4f(aabb.getMax(), 1));
+                
+                Vector3f min = new Vector3f(min4.x, min4.y, min4.z);
+                Vector3f max = new Vector3f(max4.x, max4.y, max4.z);
 
                 if (Intersectionf.intersectRayAab(center, ray, min, max, nearFar) && nearFar.x < closestDistance) {
                     closestDistance = nearFar.x;
-                    selectedEntity = entity;
-
-
+                    selectedEntity = selectable;
                 }
             }
 

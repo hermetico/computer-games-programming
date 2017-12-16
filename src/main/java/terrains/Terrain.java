@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class Terrain {
     private static final float SIZE = 500;
-    private static final float MAX_HEIGHT = 50;
+    private static final float MAX_HEIGHT = 0;// flat 50;
     private static final float MAX_PIXEL_VALUE  = 256 * 256 * 256;
 
 

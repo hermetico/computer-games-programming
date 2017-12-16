@@ -65,6 +65,7 @@ public class Entity implements Selectable{
         this.entityDescription = description;
 
         createBoundingBox();
+        adaptBoundingBox();
     }
 
     private void createBoundingBox(){
@@ -225,24 +226,15 @@ public class Entity implements Selectable{
     }
 
     @Override
-    public Vector3f getBoxPosition() {
-        return AABB.getPosition();
-    }
-
-    @Override
-    public Vector3f getBoxScale() {
-        return AABB.getScale();
-    }
-
-    @Override
-    public String getEntityDescription() {
-        return entityDescription;
-    }
-
-    @Override
     public AABB getAABB() {
         return AABB;
     }
+
+    @Override
+    public Entity getEntity() {
+        return this;
+    }
+
     public void setEntityDescription(String entityDescription) {
         this.entityDescription = entityDescription;
     }

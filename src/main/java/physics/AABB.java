@@ -62,22 +62,15 @@ public class AABB {
 
         this.size = new Vector3f(this.size).mul(size);
         this.sizeRatio.mul(size);
-        //this.min = new Vector3f(-0.5f,-0.5f, -0.5f);
-        //this.max = new Vector3f(0.5f, 0.5f, 0.5f);
-
-        //this.max.mul(this.size);
-        //this.min.mul(this.size);
 
         System.out.println("AABB size:");
         System.out.println(size);
-        //System.out.println("AABB min:");
-        //System.out.println(this.min);
-
 
     }
 
     public void updateSize(Vector3f size){
         this.size = new Vector3f(size);
+
         System.out.println("AABB size:");
         System.out.println(size);
     }
@@ -88,9 +81,6 @@ public class AABB {
 
     public void updatePosition(Vector3f offset) {
         this.center.add(offset);
-
-        this.max.add(offset);
-        this.min.add(offset);
     }
     public void updatePosition(float dx, float dy, float dz) {
         this.updatePosition(new Vector3f(dx, dy, dz));
@@ -112,4 +102,11 @@ public class AABB {
         return sizeRatio;
     }
 
+    public Vector3f getMin() {
+        return new Vector3f(min);
+    }
+
+    public Vector3f getMax() {
+        return new Vector3f(max);
+    }
 }
