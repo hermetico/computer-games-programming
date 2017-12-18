@@ -63,16 +63,16 @@ public class AABB {
         this.size = new Vector3f(this.size).mul(size);
         this.sizeRatio.mul(size);
 
-        System.out.println("AABB size:");
-        System.out.println(size);
+        //System.out.println("AABB size:");
+        //System.out.println(size);
 
     }
 
     public void updateSize(Vector3f size){
         this.size = new Vector3f(size);
 
-        System.out.println("AABB size:");
-        System.out.println(size);
+        //System.out.println("AABB size:");
+        //System.out.println(size);
     }
 
     public Vector3f getPosition() {

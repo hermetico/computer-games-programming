@@ -195,7 +195,7 @@ public class MainGameLoop implements Runnable{
         RawEntity bunnyEntity = loader.loadToVAO(bunnyData);
         TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
                 loader.loadTexture("purple")));
-        player = new Player(bunny, new Vector3f(0, 0, 0), 0,0, 0,7f);
+        player = new Player(bunny, new Vector3f(0, 0, 0), 0,0, 0,1f);
 
 
         //camera = new Camera(enemies.get(0));

@@ -27,7 +27,8 @@ public class Entity implements Selectable{
         this.rotY = rotY;
         this.rotZ = rotZ;
         this.scale = scale;
-        createBoundingBox();
+
+        setupAABB();
     }
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, String description) {
@@ -38,7 +39,8 @@ public class Entity implements Selectable{
         this.rotZ = rotZ;
         this.scale = scale;
         this.entityDescription = description;
-        createBoundingBox();
+
+        setupAABB();
 
     }
 
@@ -51,7 +53,7 @@ public class Entity implements Selectable{
         this.scale = scale;
         this.textureIndex = textureIndex;
 
-        createBoundingBox();
+        setupAABB();
     }
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, int textureIndex, String description) {
@@ -64,6 +66,10 @@ public class Entity implements Selectable{
         this.textureIndex = textureIndex;
         this.entityDescription = description;
 
+        setupAABB();
+    }
+
+    private void setupAABB(){
         createBoundingBox();
         adaptBoundingBox();
     }
@@ -91,11 +97,11 @@ public class Entity implements Selectable{
         Vector3f size = new Vector3f((max_x-min_x) , (max_y-min_y) , (max_z-min_z) );
         Vector3f center = new Vector3f((min_x+max_x)/2, (min_y+max_y)/2, (min_z+max_z)/2);
 
-        System.out.println("Entity size:");
-        System.out.println(size);
+        //System.out.println("Entity size:");
+        //System.out.println(size);
 
-        System.out.println("Entity min:");
-        System.out.println(new Vector3f(min_x, min_y, min_z));
+        //System.out.println("Entity min:");
+        //System.out.println(new Vector3f(min_x, min_y, min_z));
 
         this.AABB.setSize(size);
 
@@ -132,11 +138,11 @@ public class Entity implements Selectable{
 
         Vector3f size = new Vector3f((max_x-min_x) * ratio.x, (max_y-min_y) *  ratio.y, (max_z-min_z) * ratio.z);
 
-        System.out.println("Entity size:");
-        System.out.println(size.x + " " + size.y + " " + size.z);
+        //System.out.println("Entity size:");
+        //System.out.println(size.x + " " + size.y + " " + size.z);
 
-        System.out.println("Entity min:");
-        System.out.println(new Vector3f(min_x, min_y, min_z));
+        //System.out.println("Entity min:");
+        //System.out.println(new Vector3f(min_x, min_y, min_z));
 
         this.AABB.updateSize(size);
     }
