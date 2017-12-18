@@ -82,6 +82,8 @@ public class AABB {
 
     public void updatePosition(Vector3f offset) {
         this.center.add(offset);
+        this.min.add(offset);
+        this.max.add(offset);
     }
     public void updatePosition(float dx, float dy, float dz) {
         this.updatePosition(new Vector3f(dx, dy, dz));
@@ -109,5 +111,15 @@ public class AABB {
 
     public Vector3f getMax() {
         return new Vector3f(max);
+    }
+    
+    public boolean colliding( AABB other){
+        return (this.max.x > other.min.x &&
+                this.min.x < other.max.x &&
+                this.max.y > other.min.y &&
+                this.min.y < other.max.y &&
+                this.max.z > other.min.z &&
+                this.min.z < other.max.z);
+
     }
 }

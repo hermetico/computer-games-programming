@@ -30,8 +30,8 @@ import java.util.Random;
 
 
 public class MainGameLoop implements Runnable{
-    private static final int TARGET_FPS = 60;
-    private static final int TARGET_UPS = 60;
+    private static final int TARGET_FPS = 30;
+    private static final int TARGET_UPS = 30;
 
 
     private final DisplayManager display;
@@ -112,7 +112,7 @@ public class MainGameLoop implements Runnable{
         mouseInput.init(display.getWindowHandle());
         skybox = new Skybox(loader);
         renderer.init(display.getWidth(), display.getHeight(), skybox);
-        timer.init();
+
 
     }
 
@@ -139,7 +139,7 @@ public class MainGameLoop implements Runnable{
 
         // FERNS
         //ModelData dataFern = OBJFileLoader.loadOBJ("fern");
-        ModelData dataFern = OBJFileLoader.loadOBJ("sphere");
+        ModelData dataFern = OBJFileLoader.loadOBJ("cube");
         RawEntity fern = loader.loadToVAO(dataFern);
 
         //ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
@@ -150,9 +150,9 @@ public class MainGameLoop implements Runnable{
         allItems = new ArrayList<>();
         Random random = new Random();
 
-        for(int i = 0; i < 100; i++){
-            float x = random.nextFloat() * 100;
-            float z = random.nextFloat() * -100;
+        for(int i = 0; i < 400; i++){
+            float x = random.nextFloat() * terrain.SIZE;
+            float z = random.nextFloat() * -terrain.SIZE;
             float y = terrain.getTerrainHeight(x, z) + random.nextFloat() * 100;
 
             Entity n = new Entity(fernModel, new Vector3f(x,y,z),
@@ -200,11 +200,11 @@ public class MainGameLoop implements Runnable{
         guis.add(gui);
 
 
-        ModelData bunnyData = OBJFileLoader.loadOBJ("cube");
+        ModelData bunnyData = OBJFileLoader.loadOBJ("sphere");
         RawEntity bunnyEntity = loader.loadToVAO(bunnyData);
         TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
                 loader.loadTexture("purple")));
-        player = new Player(bunny, new Vector3f(0, 0, 0), 0,90, 0,1f);
+        player = new Player(bunny, new Vector3f(5, 15, -5), 0,90, 0,1f);
 
 
         //camera = new Camera(enemies.get(0));
@@ -219,17 +219,18 @@ public class MainGameLoop implements Runnable{
 
         for(Entity entity : allItems){
             selectables.add(entity);
-            physics.getRigidBodies().add(new RigidBody(PhysicsEngine.OBJECT_SPHERE, entity));
-            solids.add(entity);
+            physics.getRigidBodies().add(new RigidBody(PhysicsEngine.OBJECT_SPHERE, entity, entity.getScale()));
+            //solids.add(entity);
         }
 
         for(Entity entity : enemies){
             selectables.add(entity);
-            solids.add(entity);
+            //solids.add(entity);
         }
+        physics.setPlayer(new RigidBody(PhysicsEngine.OBJECT_SPHERE, player.getEntity(), 999));
 
 
-
+        timer.init();
         while (running && !display.windowShouldClose()) {
 
 
@@ -244,8 +245,8 @@ public class MainGameLoop implements Runnable{
                 // update game state
                 this.update(interval);
                 accumulator -= interval;
-            }
 
+            }
 
             this.render();
 
@@ -272,8 +273,9 @@ public class MainGameLoop implements Runnable{
 
     
     public void input() {
-        player.input();
+        physics.input();
         camera.input();
+
         if(keyboardInput.isKeyPressed(KeyboardInput.BOXES_KEY)){
             debug = !debug;
 

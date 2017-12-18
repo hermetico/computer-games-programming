@@ -30,7 +30,7 @@ public class Camera {
     private void initCameraPosition(){
         angleAroundObserved = 0;
         pitch = 15;
-        distanceFromObserved = 60;
+        distanceFromObserved = 10;
         yaw = 0;
     }
 

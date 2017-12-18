@@ -8,7 +8,6 @@ public class Particle {
     private Vector3f position;
     private Vector3f old_position;
     private Vector3f acceleration;
-
     private RigidBody body;
 
     public Particle( RigidBody body){
@@ -24,20 +23,24 @@ public class Particle {
     }
 
     public void accelerate(float delta){
-        position.add(acceleration.mul(delta * delta));
+
+        Vector3f acc =  new Vector3f(acceleration).mul(delta * delta);
+        position.add(acc);
         acceleration.set(0,0,0);
     }
 
     public void inertia(){
         Vector3f new_pos = new Vector3f(position).mul(PhysicsEngine.NEW_POS_FACTOR).sub(old_position.mul(PhysicsEngine.OLD_POS_FACTOR));
-        //Vector3f new_pos = new Vector3f(position).mul(2).sub(old_position);
         old_position = position;
         position = new_pos;
+
     }
 
     public void rest(){
-        acceleration.set(0f);
         old_position = new Vector3f(position);
+    }
+    public void restY(){
+        old_position.y = position.y;
     }
 
     public void increaseAcceleration(Vector3f acceleration){
@@ -50,6 +53,30 @@ public class Particle {
 
     public Vector3f getPosition(){
         return new Vector3f(position);
+    }
+
+    public void addPosition(Vector3f position){
+        this.position.add(position);
+    }
+
+
+    public void decelerateXZ(float delta){
+        float offset = 0.001f;
+        Vector3f new_old_pos = new Vector3f(position).sub(old_position);
+        new_old_pos.y = 0;
+
+        if(Math.abs(new_old_pos.x) < offset)
+            new_old_pos.x = 0;
+
+        if(Math.abs(new_old_pos.z) < offset)
+            new_old_pos.z = 0;
+
+
+        old_position.add(new_old_pos.mul(delta));
+    }
+
+    public Vector3f getDirection(){
+        return new Vector3f(position).sub(old_position);
     }
 
 }

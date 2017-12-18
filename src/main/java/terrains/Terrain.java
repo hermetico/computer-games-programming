@@ -11,8 +11,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Terrain {
-    private static final float SIZE = 500;
-    private static final float MAX_HEIGHT = 0;// flat 50;
+    public static final float X_MIN = 0;
+    public static final float X_MAX = 200;
+    public static final float Z_MAX = 0;
+    public static final float Z_MIN = -200;
+    public static final float SIZE = 200;
+    private static final float MAX_HEIGHT = 2;// flat 50;
     private static final float MAX_PIXEL_VALUE  = 256 * 256 * 256;
 
 

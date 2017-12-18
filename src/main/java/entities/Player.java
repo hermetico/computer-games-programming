@@ -29,7 +29,8 @@ public class Player extends Entity {
     }
 
     public void update (float interval, Terrain terrain, List<Entity> solids) {
-        if(currentTurnSpeed != 0.0) {
+    /*
+       if(currentTurnSpeed != 0.0) {
             super.increaseRotation(0, currentTurnSpeed * interval, 0);
         }
         float distance = currentSpeed * interval;
@@ -38,16 +39,11 @@ public class Player extends Entity {
 
 
 
-            if (!collision(solids)) {
-                super.increasePosition(dx, 0, dz);
-                upwardsSpeed += GRAVITY * interval;
-                super.increasePosition(0, upwardsSpeed * interval, 0);
 
+            super.increasePosition(dx, 0, dz);
+            upwardsSpeed += GRAVITY * interval;
+            super.increasePosition(0, upwardsSpeed * interval, 0);
 
-            } else {
-                upwardsSpeed += GRAVITY * interval;
-                super.increasePosition(-dx, 0, -dz);
-            }
 
             float terrainHeight = terrain.getTerrainHeight(super.getPosition().x, super.getPosition().z);
 
@@ -57,7 +53,8 @@ public class Player extends Entity {
                 alreadyJumping = false;
             }
 
-        }
+    */
+    }
 
 
 
@@ -92,18 +89,5 @@ public class Player extends Entity {
             jump();
         }
 
-    }
-    public float getyOffset(){
-        return yOffset;
-    }
-
-    private boolean collision(List<Entity> solids) {
-        boolean collision = false;
-        for (Entity temp : solids) {
-             if (this.bounds.collides(temp.bounds)){
-                 collision = true;
-             }
-        }
-        return collision;
     }
 }
