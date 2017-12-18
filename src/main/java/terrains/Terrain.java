@@ -53,6 +53,10 @@ public class Terrain {
         return blendMap;
     }
 
+    public float getTerrainHeight(Vector3f position){
+        return getTerrainHeight(position.x, position.z);
+    }
+
     public float getTerrainHeight(float coordX, float coordZ){
         float x = coordX - this.x, z = coordZ - this.z;
         float gridSize = SIZE / (float) (heights.length - 1);

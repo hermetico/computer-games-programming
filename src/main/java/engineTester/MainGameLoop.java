@@ -12,6 +12,8 @@ import models.RawEntity;
 import models.TexturedModel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import physics.PhysicsEngine;
+import physics.RigidBody;
 import renderEngine.*;
 import skybox.Skybox;
 import terrains.Terrain;
@@ -58,6 +60,8 @@ public class MainGameLoop implements Runnable{
     MousePicker picker;
     SelectableDetector selection;
     List<Selectable> selectables;
+    PhysicsEngine physics;
+
     public static void main(String[] args){
         try {
             boolean vSync = false;
@@ -79,6 +83,7 @@ public class MainGameLoop implements Runnable{
         loader = new Loader();
         mouseInput = MouseInput.getInstance();
         keyboardInput = KeyboardInput.getInstance();
+        physics = PhysicsEngine.getInstance();
 
     }
 
@@ -129,23 +134,27 @@ public class MainGameLoop implements Runnable{
 
         terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
 
+        physics.init(terrain);
 
 
         // FERNS
-        ModelData dataFern = OBJFileLoader.loadOBJ("fern");
+        //ModelData dataFern = OBJFileLoader.loadOBJ("fern");
+        ModelData dataFern = OBJFileLoader.loadOBJ("sphere");
         RawEntity fern = loader.loadToVAO(dataFern);
 
-        ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
-        fernAtlasTexture.setNumberOfRows(2);
+        //ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
+        //fernAtlasTexture.setNumberOfRows(2);
+        ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("purple"));
         TexturedModel fernModel = new TexturedModel(fern,fernAtlasTexture);
 
         allItems = new ArrayList<>();
         Random random = new Random();
 
-        for(int i = 0; i < 5; i++){
+        for(int i = 0; i < 100; i++){
             float x = random.nextFloat() * 100;
             float z = random.nextFloat() * -100;
-            float y = terrain.getTerrainHeight(x, z);
+            float y = terrain.getTerrainHeight(x, z) + random.nextFloat() * 100;
+
             Entity n = new Entity(fernModel, new Vector3f(x,y,z),
                     0,
                     random.nextFloat() * 180f,
@@ -195,7 +204,7 @@ public class MainGameLoop implements Runnable{
         RawEntity bunnyEntity = loader.loadToVAO(bunnyData);
         TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
                 loader.loadTexture("purple")));
-        player = new Player(bunny, new Vector3f(0, 0, 0), 0,0, 0,1f);
+        player = new Player(bunny, new Vector3f(0, 0, 0), 0,90, 0,1f);
 
 
         //camera = new Camera(enemies.get(0));
@@ -207,14 +216,18 @@ public class MainGameLoop implements Runnable{
         selectables = new ArrayList<>();
         solids = new ArrayList<>();
         selectables.add(player);
+
         for(Entity entity : allItems){
             selectables.add(entity);
+            physics.getRigidBodies().add(new RigidBody(PhysicsEngine.OBJECT_SPHERE, entity));
             solids.add(entity);
         }
+
         for(Entity entity : enemies){
             selectables.add(entity);
             solids.add(entity);
         }
+
 
 
         while (running && !display.windowShouldClose()) {
@@ -278,13 +291,15 @@ public class MainGameLoop implements Runnable{
     }
 
     protected void update(float interval) {
-        for(Enemy entity : enemies) {
-            entity.update(interval, terrain, player.getPosition());
-        }
+        //for(Enemy entity : enemies) {
+        //    entity.update(interval, terrain, player.getPosition());
+        //}
         player.update(interval, terrain, solids);
         camera.update(interval);
         skybox.update(interval);
         picker.update();
+
+        physics.update(interval);
 
     }
 

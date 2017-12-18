@@ -19,6 +19,7 @@ public class AABB {
 
 
     };
+
     public static int[] boundingIndices = new int[]{
             // Top square
             0, 1, 1, 2, 2, 3, 3, 0,
@@ -63,16 +64,16 @@ public class AABB {
         this.size = new Vector3f(this.size).mul(size);
         this.sizeRatio.mul(size);
 
-        //System.out.println("AABB size:");
-        //System.out.println(size);
+        //PhysicsEngine.out.println("AABB size:");
+        //PhysicsEngine.out.println(size);
 
     }
 
     public void updateSize(Vector3f size){
         this.size = new Vector3f(size);
 
-        //System.out.println("AABB size:");
-        //System.out.println(size);
+        //PhysicsEngine.out.println("AABB size:");
+        //PhysicsEngine.out.println(size);
     }
 
     public Vector3f getPosition() {

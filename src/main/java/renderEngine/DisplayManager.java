@@ -43,7 +43,7 @@ public class DisplayManager {
 
     public void createDisplay() {
         // Setup an error callback. The default implementation
-        // will print the error message in System.err.
+        // will print the error message in PhysicsEngine.err.
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!glfwInit()) {

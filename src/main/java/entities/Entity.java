@@ -19,6 +19,7 @@ public class Entity implements Selectable{
     protected String entityDescription = "Not defined";
     protected boolean selected = false;
     protected boolean debugSelected = false;
+    private Vector3f size;
 
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         this.model = model;
@@ -103,6 +104,7 @@ public class Entity implements Selectable{
         //System.out.println("Entity min:");
         //System.out.println(new Vector3f(min_x, min_y, min_z));
 
+        this.size = new Vector3f(size);
         this.AABB.setSize(size);
 
         this.AABB.updatePosition(center.add(this.position));
@@ -172,6 +174,11 @@ public class Entity implements Selectable{
         this.AABB.updatePosition(dx, dy, dz);
     }
 
+    public void increasePosition(Vector3f offset){
+        this.position.add(offset);
+        this.AABB.updatePosition(offset);
+    }
+
     public void increaseRotation(float dx, float dy, float dz){
         this.rotX += dx;
         this.rotY += dy;
@@ -194,6 +201,10 @@ public class Entity implements Selectable{
 
     public void setPosition(Vector3f position) {
         this.position = position;
+    }
+    public void updatePosition(Vector3f position) {
+        Vector3f  offset = new Vector3f(position).sub(this.position);
+        this.increasePosition(offset);
     }
 
     public float getRotX() {
@@ -249,7 +260,7 @@ public class Entity implements Selectable{
         return scale;
     }
 
-
+    public Vector3f getSize(){ return size;}
 
 
 
