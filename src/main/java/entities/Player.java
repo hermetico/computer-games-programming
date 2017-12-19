@@ -71,4 +71,8 @@ public class Player extends Entity {
     public RigidBody getBody() {
         return body;
     }
+
+    public Light getJetLight() {
+        return jetLight;
+    }
 }

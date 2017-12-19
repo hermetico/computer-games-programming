@@ -87,8 +87,23 @@ public class EntityFactory {
             visible.add(n);
             RigidBody m = new RigidBody(PhysicsEngine.OBJECT_SPHERE,n ,30);
             cubes.add(m);
-            physics.getRigidBodies().add(m);
+            physics.getCubes().add(m);
         }
+    }
+
+    public Player createPlayer(){
+
+        ModelData bunnyData = OBJFileLoader.loadOBJ("sphere");
+        RawEntity bunnyEntity = loader.loadToVAO(bunnyData);
+        TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
+                loader.loadTexture("purple")));
+        Player player = new Player(bunny, new Vector3f(5, 15, -5), 0,90, 0,1f);
+        Light jetLight = createJetPackLight();
+        player.setJetLight(jetLight);
+        physics.setPlayer(player.getBody());
+        visible.add(player.getEntity());
+        return player;
+
     }
 
 

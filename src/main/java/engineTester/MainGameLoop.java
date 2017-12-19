@@ -156,45 +156,14 @@ public class MainGameLoop implements Runnable{
         // CUBES
 
         factory.createCube();
-	    // enemies
-
-        /*ModelData dataSheep = OBJFileLoader.loadOBJ("cube");
-        RawEntity sheep = loader.loadToVAO(dataSheep);
-
-        ModelTexture sheepTexture = new ModelTexture(loader.loadTexture("trencadis"));
-        TexturedModel sheepModel = new TexturedModel(sheep,sheepTexture);
-        for(int i = 0; i < 15; i++) {
-
-            float x = random.nextFloat() * 1000;
-            float z = random.nextFloat() * -1000;
-            float y = terrain.getTerrainHeight(x, z);
-            Enemy s = new Enemy(sheepModel, new Vector3f(x,y,z),
-                    0,
-                    random.nextFloat() * 180f,
-                    0,
-                    1f);
-
-            s.setEntityDescription("Enemy " + i);
-            enemies.add(s);
-        }
-        */
 
         lights = factory.createGameLights();
-        Light jetLight = factory.createJetPackLight();
-
-        lights.add(jetLight);
 
         guis = new ArrayList<>();
-        GUITexture gui = new GUITexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-        guis.add(gui);
 
 
-        ModelData bunnyData = OBJFileLoader.loadOBJ("sphere");
-        RawEntity bunnyEntity = loader.loadToVAO(bunnyData);
-        TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
-                loader.loadTexture("purple")));
-        player = new Player(bunny, new Vector3f(5, 15, -5), 0,90, 0,1f);
-        player.setJetLight(jetLight);
+        player = factory.createPlayer();
+        lights.add(player.getJetLight());
 
         //camera = new Camera(enemies.get(0));
         camera = new Camera(player);
@@ -202,23 +171,16 @@ public class MainGameLoop implements Runnable{
         picker = new MousePicker(camera, renderer.getProjectionMatrix());
 
         selection = new SelectableDetector();
-
         selectables.add(player);
-
-        for(Entity entity : allItems){
+        for(Entity entity : visible){
             selectables.add(entity);
-            physics.getCubes().add(new RigidBody(PhysicsEngine.OBJECT_SPHERE, entity, entity.getScale()));
-            //solids.add(entity);
         }
 
-        for(Entity entity : enemies){
-            selectables.add(entity);
-            //solids.add(entity);
-        }
-        physics.setPlayer(player.getBody());
+
 
 
         timer.init();
+
         float shootInterval = 0;
         while (running && !display.windowShouldClose()) {
 
@@ -291,9 +253,7 @@ public class MainGameLoop implements Runnable{
     }
 
     protected void update(float interval) {
-        //for(Enemy entity : enemies) {
-        //    entity.update(interval, terrain, player.getPosition());
-        //}
+
         player.update();
         camera.update(interval);
         skybox.update(interval);
@@ -317,17 +277,12 @@ public class MainGameLoop implements Runnable{
             renderer.processEntity(entity);
         }
 
-        for(Enemy entity : enemies){
-            renderer.processEntity(entity);
-        }
-
         for(Entity entity : bullets){
             renderer.processEntity(entity);
         }
 
         renderer.render(lights, camera);
         renderer.renderBoxes(selectables, camera);
-        //guiRenderer.render(guis);
         display.updateDisplay();
 
     }
