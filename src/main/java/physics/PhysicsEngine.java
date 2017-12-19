@@ -21,11 +21,11 @@ public class PhysicsEngine {
     public static float OLD_POS_FACTOR = 0.99f;
     public static int OBJECT_SPHERE = 1;
     public static int OBJECT_CUBE = 2;
-    public static int STEPS = 5;
+    public static int STEPS = 2;
 
     private final Vector3f GRAVITY = new Vector3f(0f, -18f, 0f);
-    private final Vector3f JUMP = new Vector3f(GRAVITY).mul(-10);
-    private final float PLAYER_MOVE_SPEED = 0.1f;
+    private final Vector3f JUMP = new Vector3f(GRAVITY).mul(-5);
+    private final float PLAYER_MOVE_SPEED = 0.5f;
     private final float PLAYER_TURN_SPEED = 50;
 
     private float currentSpeed = 0;

@@ -124,7 +124,7 @@ public class MainGameLoop implements Runnable{
         float elapsedTime;
         float accumulator = 0f;
         float interval = 1f / TARGET_UPS;
-        float shoots = interval * 5;
+        float shoots = 1f / (TARGET_UPS/2);
         boolean running = true;
 
         allItems = new ArrayList<>();
@@ -236,7 +236,7 @@ public class MainGameLoop implements Runnable{
             selectables.add(entity);
             //solids.add(entity);
         }
-        physics.setPlayer(new RigidBody(PhysicsEngine.OBJECT_SPHERE, player.getEntity(), 999));
+        physics.setPlayer(player.getBody());
 
 
         timer.init();

@@ -3,6 +3,7 @@ package entities;
 import inputs.KeyboardInput;
 import models.TexturedModel;
 import org.joml.Vector3f;
+import physics.PhysicsEngine;
 import physics.RigidBody;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
@@ -14,12 +15,14 @@ public class Player extends Entity {
     private Light jetLight;
     private int MAX_SHOTS = 1000;
     private boolean shooting = false;
+    private RigidBody body;
     //private RigidBody
     public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         super(model, position, rotX, rotY, rotZ, scale);
 
         entityDescription = "The player";
         this.keyboardInput = KeyboardInput.getInstance();
+        this.body = new RigidBody(PhysicsEngine.OBJECT_SPHERE, this, 999);
     }
 
     public void update () {
@@ -49,15 +52,23 @@ public class Player extends Entity {
         if (!shooting){
             shooting = true;
             System.out.println("Shooting");
-            Vector3f position = new Vector3f(this.position);
-            factory.createBullet(position, position);
+            Vector3f old_position = new Vector3f(this.position);
+            float distance = 1f;
+
+
+            float dx = (float) (distance * Math.sin(Math.toRadians(getRotY())));
+            float dz = (float) (distance * Math.cos(Math.toRadians(getRotY())));
+            Vector3f new_position = new Vector3f(old_position.x + dx, old_position.y + 0.2f ,old_position.z +dz);
+            factory.createBullet(new_position, old_position);
         }
 
     }
 
     public void shooting_allowed(){
         shooting = false;
+    }
 
-
+    public RigidBody getBody() {
+        return body;
     }
 }

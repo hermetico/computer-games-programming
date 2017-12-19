@@ -43,12 +43,10 @@ public class EntityFactory {
         ModelData bulletModel = OBJFileLoader.loadOBJ("sphere");
         RawEntity bulletEntity = loader.loadToVAO(bulletModel);
         TexturedModel bulletTxModel = new TexturedModel(bulletEntity, new ModelTexture(loader.loadTexture("trencadis")));
-        Bullet bullet = new Bullet(bulletTxModel, position, 0,0, 0,1f);
+        Bullet bullet = new Bullet(bulletTxModel, position, 0,0, 0,.5f, old_position);
         this.bullets.add(bullet);
         this.selectables.add(bullet);
-        RigidBody bulletBody = new RigidBody(PhysicsEngine.OBJECT_SPHERE, bullet.getEntity(), 2);
-        bulletBody.setOldPosition(old_position);
-        physics.getBullets().add(bulletBody);
+        physics.getBullets().add(bullet.getBody());
 
     }
 
