@@ -171,13 +171,6 @@ public class MainGameLoop implements Runnable{
         picker = new MousePicker(camera, renderer.getProjectionMatrix());
 
         selection = new SelectableDetector();
-        selectables.add(player);
-        for(Entity entity : visible){
-            selectables.add(entity);
-        }
-
-
-
 
         timer.init();
 

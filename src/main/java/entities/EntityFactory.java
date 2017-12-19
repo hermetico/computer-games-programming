@@ -88,6 +88,7 @@ public class EntityFactory {
             RigidBody m = new RigidBody(PhysicsEngine.OBJECT_SPHERE,n ,30);
             cubes.add(m);
             physics.getCubes().add(m);
+            this.selectables.add(n);
         }
     }
 
@@ -102,6 +103,7 @@ public class EntityFactory {
         player.setJetLight(jetLight);
         physics.setPlayer(player.getBody());
         visible.add(player.getEntity());
+        this.selectables.add(player.getEntity());
         return player;
 
     }
