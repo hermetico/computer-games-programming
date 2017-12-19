@@ -228,7 +228,7 @@ public class MainGameLoop implements Runnable{
 
         for(Entity entity : allItems){
             selectables.add(entity);
-            physics.getRigidBodies().add(new RigidBody(PhysicsEngine.OBJECT_SPHERE, entity, entity.getScale()));
+            physics.getCubes().add(new RigidBody(PhysicsEngine.OBJECT_SPHERE, entity, entity.getScale()));
             //solids.add(entity);
         }
 

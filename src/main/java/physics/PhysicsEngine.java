@@ -2,7 +2,6 @@ package physics;
 
 import entities.Entity;
 import entities.EntityFactory;
-import entities.Player;
 import inputs.KeyboardInput;
 import org.joml.Vector3f;
 import terrains.Terrain;
@@ -36,7 +35,7 @@ public class PhysicsEngine {
 
 
     private Terrain terrain;
-    private List<RigidBody> rigidBodies = new ArrayList<RigidBody>();
+    private List<RigidBody> cubes = new ArrayList<RigidBody>();
     private List<RigidBody> bullets = new ArrayList<RigidBody>();
 
     private static PhysicsEngine instance;
@@ -56,11 +55,15 @@ public class PhysicsEngine {
         delta /= STEPS;
         Entity theplayer = player.getEntity();
         for(int i = 0; i < STEPS; i++){
+
             checkCubeColisions();
+            checkBulletCollisions();
+
             applyGravity();
             applyAcceleration(delta);
 
             checkWorldConstraints();
+            checkPlayerWorldConstraints();
 
             //internal_constraints
 
@@ -124,7 +127,7 @@ public class PhysicsEngine {
     private void checkCubeColisions() {
 
         AABB pBox = player.getEntity().getAABB();
-        for (RigidBody body : rigidBodies) {
+        for (RigidBody body : cubes) {
             if (body.equals(player)) continue;
 
             if (pBox.colliding(body.getEntity().getAABB())) {
@@ -147,28 +150,28 @@ public class PhysicsEngine {
 
         }
     }
-    private void checkWorldConstraints(){
-        for(RigidBody body: rigidBodies){
-            //TODO SPHERES SO FAR
-            float radius = body.getRadius();
-            Vector3f bodyPosition = body.getPosition();
-            float floor = terrain.getTerrainHeight(bodyPosition);
 
-            float tx, ty, tz;
-            tx =  Math.min(terrain.X_MAX - radius, Math.max(bodyPosition.x , terrain.X_MIN + radius));
-            tz =  Math.min(terrain.Z_MAX - radius, Math.max(bodyPosition.z , terrain.Z_MIN + radius));
-            ty =  Math.max(bodyPosition.y, floor + radius);
+    private void checkPlayerWorldConstraints(){
+        //TODO SPHERES SO FAR
+        float radius = player.getRadius();
+        Vector3f playerPosition = player.getPosition();
+        float floor = terrain.getTerrainHeight(playerPosition);
 
-            if(bodyPosition.y < floor + radius){
-                ty = (floor + radius);
-                 if (body.equals(player)){
-                     currentMaxHeight = 0;
-                     player_jumping = false;
-                }
-                body.setPosition(new Vector3f(tx, ty, tz));
+        float tx, ty, tz;
+        tx =  Math.min(terrain.X_MAX - radius, Math.max(playerPosition.x , terrain.X_MIN + radius));
+        tz =  Math.min(terrain.Z_MAX - radius, Math.max(playerPosition.z , terrain.Z_MIN + radius));
+        ty =  Math.max(playerPosition.y, floor + radius);
+
+        if(playerPosition.y < floor + radius){
+            ty = (floor + radius);
+            if (player.equals(player)){
+                currentMaxHeight = 0;
+                player_jumping = false;
             }
+            player.setPosition(new Vector3f(tx, ty, tz));
         }
-
+    }
+    private void checkWorldConstraints(){
         for(RigidBody body: bullets){
             //TODO SPHERES SO FAR
             float radius = body.getRadius();
@@ -188,6 +191,20 @@ public class PhysicsEngine {
 
     }
 
+    private void checkBulletCollisions(){
+        for(RigidBody a : bullets ){
+            AABB aBox = a.getEntity().getAABB();
+            for(RigidBody b : cubes) {
+
+                if (aBox.colliding(b.getEntity().getAABB())) {
+                    // going down?
+                    hideCube(b);
+                    removeBullet(a);
+
+                }
+            }
+        }
+    }
     private void checkCollisions(){
         for(RigidBody a : bullets ){
             for(RigidBody b : bullets ) {
@@ -239,8 +256,8 @@ public class PhysicsEngine {
         return instance;
     }
 
-    public List<RigidBody> getRigidBodies() {
-        return rigidBodies;
+    public List<RigidBody> getCubes() {
+        return cubes;
     }
 
     public List<RigidBody> getBullets() {
@@ -269,7 +286,6 @@ public class PhysicsEngine {
             if(!player_jumping) {
                 player_jumping = true;
                 player.increaseAcceleration(new Vector3f(JUMP).mul(10));
-                //player.addPosition(new Vector3f(JUMP).div(100));
             }
         }
 
@@ -277,10 +293,17 @@ public class PhysicsEngine {
 
     public void setPlayer(RigidBody player){
         this.player = player;
-        rigidBodies.add(player);
     }
 
     public float getCurrentMaxHeight() {
         return currentMaxHeight;
+    }
+    
+    private void removeBullet(RigidBody bullet){
+        //TODO
+    }
+
+    private void hideCube(RigidBody cube){
+        //TODO
     }
 }
