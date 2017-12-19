@@ -12,6 +12,7 @@ import utils.OBJC.ModelData;
 import utils.OBJC.OBJFileLoader;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -28,7 +29,6 @@ public class EntityFactory {
 
     public void init(List<Entity> bullets, List<RigidBody> cubes, List<Entity> visible, List<Selectable> selectables){
         physics = PhysicsEngine.getInstance();
-        this.bullets = bullets;
         this.cubes = cubes;
         this.visible = visible;
         this.selectables = selectables;
@@ -51,7 +51,7 @@ public class EntityFactory {
         RawEntity bulletEntity = loader.loadToVAO(bulletModel);
         TexturedModel bulletTxModel = new TexturedModel(bulletEntity, new ModelTexture(loader.loadTexture("trencadis")));
         Bullet bullet = new Bullet(bulletTxModel, position, 0,0, 0,.8f, old_position);
-        this.bullets.add(bullet);
+        this.visible.add(bullet);
         this.selectables.add(bullet);
         physics.getBullets().add(bullet.getBody());
 
@@ -71,11 +71,11 @@ public class EntityFactory {
 
         Random random = new Random();
 
-        for(int i = 0; i < 500; i++){
+        for(int i = 0; i < 1000; i++){
 
-            float x = random.nextFloat() * 200;
-            float z = random.nextFloat() * -200;
-            float y = random.nextFloat() * 100;
+            float x = random.nextFloat() * 100;
+            float z = random.nextFloat() * -100;
+            float y = random.nextFloat() * 200;
 
             Entity n = new Entity(fernModel, new Vector3f(x,y,z),
                     0,
@@ -115,5 +115,34 @@ public class EntityFactory {
             instance = new EntityFactory();
         }
         return instance;
+    }
+
+
+    public void removeVisible(Entity entity){
+        visible.remove(entity);
+    }
+
+    public void removeCube(RigidBody cube){
+        cubes.remove(cube);
+    }
+
+    public void hideCubesBelow( float height){
+        for (Iterator<RigidBody> iterator = physics.getCubes().iterator(); iterator.hasNext();) {
+            RigidBody body = iterator.next();
+            if (body.getEntity().getAABB().getMax().y < height){
+                iterator.remove();
+                visible.remove(body.getEntity());
+            }
+        }
+    }
+
+    public void restoreAllCubes(){
+        for(RigidBody cube : cubes){
+            if(!physics.getCubes().contains(cube)) {
+                physics.getCubes().add(cube);
+                visible.add(cube.getEntity());
+            }
+        }
+
     }
 }

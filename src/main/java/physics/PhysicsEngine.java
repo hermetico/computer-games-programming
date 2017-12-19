@@ -7,6 +7,7 @@ import org.joml.Vector3f;
 import terrains.Terrain;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -30,6 +31,7 @@ public class PhysicsEngine {
     private final float PLAYER_MOVE_SPEED = 0.5f;
     private final float PLAYER_TURN_SPEED = 50;
 
+
     private float currentSpeed = 0;
     private float currentTurnSpeed = 0;
 
@@ -41,7 +43,11 @@ public class PhysicsEngine {
     private static PhysicsEngine instance;
     private EntityFactory factory;
 
-    private float currentMaxHeight = 0;
+    private float currentMaxHeight = 0.0f;
+    private int shootedCubes = 0;
+    private boolean hideBelowMaxHeight = false;
+    private boolean restoreCubes = false;
+
     private PhysicsEngine(){}
 
     public void init(Terrain terrain){
@@ -103,6 +109,15 @@ public class PhysicsEngine {
             }
         }
 
+        if( restoreCubes ){
+            factory.restoreAllCubes();
+            restoreCubes = false;
+        }
+
+        if( hideBelowMaxHeight ){
+            factory.hideCubesBelow(currentMaxHeight);
+            hideBelowMaxHeight = false;
+        }
 
     }
 
@@ -139,6 +154,7 @@ public class PhysicsEngine {
                         player.rest();
                         player_jumping = false;
                         if( body.getEntity().getAABB().getMax().y > currentMaxHeight){
+                            hideBelowMaxHeight = true;
                             currentMaxHeight = body.getEntity().getAABB().getMax().y;
                         }
                     }
@@ -164,15 +180,19 @@ public class PhysicsEngine {
 
         if(playerPosition.y < floor + radius){
             ty = (floor + radius);
-            if (player.equals(player)){
-                currentMaxHeight = 0;
+
+
                 player_jumping = false;
-            }
+                if(currentMaxHeight > 0) {
+                    restoreCubes = true;
+                }
+            currentMaxHeight = 0;
             player.setPosition(new Vector3f(tx, ty, tz));
         }
     }
     private void checkWorldConstraints(){
-        for(RigidBody body: bullets){
+        for (Iterator<RigidBody> iterator = bullets.iterator(); iterator.hasNext();) {
+            RigidBody body = iterator.next();
             //TODO SPHERES SO FAR
             float radius = body.getRadius();
             Vector3f bodyPosition = body.getPosition();
@@ -184,23 +204,29 @@ public class PhysicsEngine {
             ty =  Math.max(bodyPosition.y, floor + radius);
 
             if(bodyPosition.y < floor + radius){
-                ty = (floor + radius);
-                body.setPosition(new Vector3f(tx, ty, tz));
+
+                iterator.remove();
+                removeVisible(body.getEntity());
             }
         }
 
     }
 
     private void checkBulletCollisions(){
-        for(RigidBody a : bullets ){
+        for (Iterator<RigidBody> iterator = bullets.iterator(); iterator.hasNext();) {
+            RigidBody a = iterator.next();
             AABB aBox = a.getEntity().getAABB();
-            for(RigidBody b : cubes) {
-
+            for (Iterator<RigidBody> iteratorb = cubes.iterator(); iteratorb.hasNext();) {
+                RigidBody b = iteratorb.next();
                 if (aBox.colliding(b.getEntity().getAABB())) {
                     // going down?
-                    hideCube(b);
-                    removeBullet(a);
 
+                    removeVisible(a.getEntity());
+                    removeVisible(b.getEntity());
+                    iteratorb.remove();
+                    iterator.remove();
+
+                    shootedCube(b);
                 }
             }
         }
@@ -297,14 +323,22 @@ public class PhysicsEngine {
     }
 
     public float getCurrentMaxHeight() {
+
         return currentMaxHeight;
     }
-    
-    private void removeBullet(RigidBody bullet){
-        //TODO
+
+    public int getShootedCubes() {
+        return shootedCubes;
     }
 
-    private void hideCube(RigidBody cube){
-        //TODO
+    private void removeVisible(Entity entity){
+        factory.removeVisible(entity);
+
     }
+
+    private void shootedCube(RigidBody cube){
+        shootedCubes++;
+        factory.removeCube(cube);
+    }
+
 }

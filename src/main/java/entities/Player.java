@@ -51,7 +51,6 @@ public class Player extends Entity {
     private void shot(){
         if (!shooting){
             shooting = true;
-            System.out.println("Shooting");
             Vector3f old_position = new Vector3f(this.position);
             float distance = 1f;
 

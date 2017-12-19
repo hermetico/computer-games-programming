@@ -126,7 +126,7 @@ public class MainGameLoop implements Runnable{
         float elapsedTime;
         float accumulator = 0f;
         float interval = 1f / TARGET_UPS;
-        float shoots = 1f / (TARGET_UPS/2);
+        float shoots = 1f / (TARGET_UPS/10);
         boolean running = true;
 
         allItems = new ArrayList<>();
