@@ -162,7 +162,7 @@ public class MainGameLoop implements Runnable{
 
         Random random = new Random();
 
-        for(int i = 0; i < 0; i++){
+        for(int i = 0; i < 500; i++){
             float x = random.nextFloat() * terrain.SIZE;
             float z = random.nextFloat() * -terrain.SIZE;
             float y = terrain.getTerrainHeight(x, z) + random.nextFloat() * 100;

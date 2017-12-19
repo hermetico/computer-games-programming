@@ -85,6 +85,9 @@ public class RigidBody {
     public void decelerateXZ(float delta){
         particles.get(0).decelerateXZ(delta);
     }
+    public Vector3f getAcceleration(){
+        return particles.get(0).getRealAcceleration();
+    }
 
     public float getYDirection(){
         return particles.get(0).getDirection().y / Math.abs(particles.get(0).getDirection().y);
@@ -92,5 +95,8 @@ public class RigidBody {
 
     public void restY(){
         particles.get(0).restY();
+    }
+    public void rest(){
+        particles.get(0).rest();
     }
 }

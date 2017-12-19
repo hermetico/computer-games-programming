@@ -37,7 +37,9 @@ public class Particle {
     }
 
     public void rest(){
-        old_position = new Vector3f(position);
+        //old_position = new Vector3f(position);
+        Vector3f new_old_pos = getRealAcceleration().div(5);
+        old_position = new Vector3f(position).sub(new_old_pos);
     }
     public void restY(){
         old_position.y = position.y;
@@ -62,7 +64,7 @@ public class Particle {
 
     public void decelerateXZ(float delta){
         float offset = 0.001f;
-        Vector3f new_old_pos = new Vector3f(position).sub(old_position);
+        Vector3f new_old_pos = getRealAcceleration();
         new_old_pos.y = 0;
 
         if(Math.abs(new_old_pos.x) < offset)
@@ -73,6 +75,10 @@ public class Particle {
 
 
         old_position.add(new_old_pos.mul(delta));
+    }
+
+    public Vector3f getRealAcceleration() {
+        return new Vector3f(position).sub(old_position);
     }
 
     public Vector3f getDirection(){

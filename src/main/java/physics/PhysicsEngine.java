@@ -15,10 +15,12 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 public class PhysicsEngine {
     private KeyboardInput keyboardInput;
     private RigidBody player;
-    private boolean player_jumping;
+    private boolean player_jumping = true;
     private boolean set_jump;
+
     public static float NEW_POS_FACTOR = 1.99f;
     public static float OLD_POS_FACTOR = 0.99f;
+
     public static int OBJECT_SPHERE = 1;
     public static int OBJECT_CUBE = 2;
     public static int STEPS = 2;
@@ -74,6 +76,12 @@ public class PhysicsEngine {
                 player.addPosition(new Vector3f(dx, 0, dz));
 
             }else{
+                Vector3f acceleration = player.getAcceleration();
+                float acc = (float)Math.sqrt((float)(Math.pow(acceleration.x, 2) + Math.pow(acceleration.z, 2)));
+                float distance = acc * 0.01f;
+                float dx = (float) (distance * Math.sin(Math.toRadians(theplayer.getRotY())));
+                float dz = (float) (distance * Math.cos(Math.toRadians(theplayer.getRotY())));
+                player.addPosition(new Vector3f(dx, 0, dz));
                 player.decelerateXZ(delta);
             }
 
@@ -115,7 +123,8 @@ public class PhysicsEngine {
                     if(pBox.getMin().y < body.getEntity().getAABB().getMax().y) {
                         float diff =  body.getEntity().getAABB().getMax().y  - pBox.getMin().y;
                         player.addPosition(new Vector3f(0, diff , 0));
-                        player.restY();
+                        player.rest();
+                        player_jumping = false;
                     }
 
 
@@ -231,7 +240,7 @@ public class PhysicsEngine {
         }else if (keyboardInput.isKeyPressed(GLFW_KEY_DOWN)) {
             this.currentSpeed = -PLAYER_MOVE_SPEED;
         }else{
-            this.currentSpeed = 0;
+            this.currentSpeed = .1f;
         }
 
         if (keyboardInput.isKeyPressed(GLFW_KEY_RIGHT)) {
@@ -243,7 +252,11 @@ public class PhysicsEngine {
         }
 
         if(keyboardInput.isKeyPressed(GLFW_KEY_SPACE)){
-            player.increaseAcceleration(JUMP);
+            if(!player_jumping) {
+                player_jumping = true;
+                player.increaseAcceleration(new Vector3f(JUMP).mul(10));
+                //player.addPosition(new Vector3f(JUMP).div(100));
+            }
         }
 
     }
