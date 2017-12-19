@@ -5,7 +5,6 @@ import models.RawEntity;
 import models.TexturedModel;
 import org.joml.Vector3f;
 import physics.PhysicsEngine;
-import physics.RigidBody;
 import renderEngine.Loader;
 import textures.ModelTexture;
 import utils.OBJC.ModelData;
@@ -20,6 +19,7 @@ public class EntityFactory {
     List<Selectable> selectables;
     private Loader loader = new Loader();
     private PhysicsEngine physics;
+
     private EntityFactory(){}
 
     public void init(List<Entity> bullets, List<Selectable> selectables){

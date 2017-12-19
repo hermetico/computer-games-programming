@@ -1,6 +1,7 @@
 package physics;
 
 import entities.Entity;
+import entities.EntityFactory;
 import entities.Player;
 import inputs.KeyboardInput;
 import org.joml.Vector3f;
@@ -39,12 +40,14 @@ public class PhysicsEngine {
     private List<RigidBody> bullets = new ArrayList<RigidBody>();
 
     private static PhysicsEngine instance;
+    private EntityFactory factory;
 
     private PhysicsEngine(){}
 
     public void init(Terrain terrain){
         this.terrain = terrain;
         this.keyboardInput = KeyboardInput.getInstance();
+        factory = EntityFactory.getInstance();
     }
 
     public void update(float delta){
@@ -76,16 +79,22 @@ public class PhysicsEngine {
                 player.addPosition(new Vector3f(dx, 0, dz));
 
             }else{
-                Vector3f acceleration = player.getAcceleration();
-                float acc = (float)Math.sqrt((float)(Math.pow(acceleration.x, 2) + Math.pow(acceleration.z, 2)));
-                float distance = acc * 0.01f;
-                float dx = (float) (distance * Math.sin(Math.toRadians(theplayer.getRotY())));
-                float dz = (float) (distance * Math.cos(Math.toRadians(theplayer.getRotY())));
-                player.addPosition(new Vector3f(dx, 0, dz));
+
                 player.decelerateXZ(delta);
+
             }
 
             if(currentTurnSpeed != 0.0) {
+
+                if (player_jumping) {
+                    Vector3f acceleration = player.getAcceleration();
+                    float acc = (float) Math.sqrt((float) (Math.pow(acceleration.x, 2) + Math.pow(acceleration.y, 2)+ Math.pow(acceleration.z, 2)));
+                    float distance = acc * PLAYER_MOVE_SPEED * delta;
+                    float dx = (float) (distance * Math.sin(Math.toRadians(theplayer.getRotY())));
+                    float dz = (float) (distance * Math.cos(Math.toRadians(theplayer.getRotY())));
+                    player.addPosition(new Vector3f(dx, 0, dz));
+                }
+
                 theplayer.increaseRotation(0f, currentTurnSpeed * delta, 0f);
             }
         }
@@ -240,7 +249,7 @@ public class PhysicsEngine {
         }else if (keyboardInput.isKeyPressed(GLFW_KEY_DOWN)) {
             this.currentSpeed = -PLAYER_MOVE_SPEED;
         }else{
-            this.currentSpeed = .1f;
+            this.currentSpeed = 0f;
         }
 
         if (keyboardInput.isKeyPressed(GLFW_KEY_RIGHT)) {

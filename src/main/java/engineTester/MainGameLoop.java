@@ -337,6 +337,7 @@ public class MainGameLoop implements Runnable{
         for(Entity entity : allItems){
             renderer.processEntity(entity);
         }
+
         for(Enemy entity : enemies){
             renderer.processEntity(entity);
         }
