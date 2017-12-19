@@ -43,6 +43,7 @@ public class PhysicsEngine {
     private static PhysicsEngine instance;
     private EntityFactory factory;
 
+    private float currentMaxHeight = 0;
     private PhysicsEngine(){}
 
     public void init(Terrain terrain){
@@ -135,6 +136,9 @@ public class PhysicsEngine {
                         player.addPosition(new Vector3f(0, diff , 0));
                         player.rest();
                         player_jumping = false;
+                        if( body.getEntity().getAABB().getMax().y > currentMaxHeight){
+                            currentMaxHeight = body.getEntity().getAABB().getMax().y;
+                        }
                     }
 
 
@@ -159,7 +163,8 @@ public class PhysicsEngine {
             if(bodyPosition.y < floor + radius){
                 ty = (floor + radius);
                  if (body.equals(player)){
-                    player_jumping = false;
+                     currentMaxHeight = 0;
+                     player_jumping = false;
                 }
                 body.setPosition(new Vector3f(tx, ty, tz));
             }
@@ -280,6 +285,7 @@ public class PhysicsEngine {
         rigidBodies.add(player);
     }
 
-
-
+    public float getCurrentMaxHeight() {
+        return currentMaxHeight;
+    }
 }
