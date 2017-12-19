@@ -79,4 +79,7 @@ public class Particle {
         return new Vector3f(position).sub(old_position);
     }
 
+    public void setOldPosition(Vector3f old_position) {
+        this.old_position = old_position;
+    }
 }

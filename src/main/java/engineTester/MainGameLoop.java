@@ -61,6 +61,8 @@ public class MainGameLoop implements Runnable{
     SelectableDetector selection;
     List<Selectable> selectables;
     PhysicsEngine physics;
+    EntityFactory factory;
+    List<Entity> bullets;
 
     public static void main(String[] args){
         try {
@@ -112,6 +114,8 @@ public class MainGameLoop implements Runnable{
         mouseInput.init(display.getWindowHandle());
         skybox = new Skybox(loader);
         renderer.init(display.getWidth(), display.getHeight(), skybox);
+        factory = EntityFactory.getInstance();
+
 
 
     }
@@ -120,8 +124,16 @@ public class MainGameLoop implements Runnable{
         float elapsedTime;
         float accumulator = 0f;
         float interval = 1f / TARGET_UPS;
-
+        float shoots = interval * 5;
         boolean running = true;
+
+        allItems = new ArrayList<>();
+        bullets = new ArrayList<>();
+        enemies = new ArrayList<Enemy>();
+        selectables = new ArrayList<>();
+        solids = new ArrayList<>();
+        factory.init(bullets, selectables);
+
 
 
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
@@ -147,7 +159,7 @@ public class MainGameLoop implements Runnable{
         ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("purple"));
         TexturedModel fernModel = new TexturedModel(fern,fernAtlasTexture);
 
-        allItems = new ArrayList<>();
+
         Random random = new Random();
 
         for(int i = 0; i < 0; i++){
@@ -166,7 +178,7 @@ public class MainGameLoop implements Runnable{
         }
 
 	    // enemies
-        enemies = new ArrayList<Enemy>();
+
         /*ModelData dataSheep = OBJFileLoader.loadOBJ("cube");
         RawEntity sheep = loader.loadToVAO(dataSheep);
 
@@ -187,15 +199,11 @@ public class MainGameLoop implements Runnable{
             enemies.add(s);
         }
         */
-        lights = new ArrayList<>();
-        Light jetLight = new Light(new Vector3f(0,0,0), new Vector3f(1,0,0), new Vector3f(0.1f, 0.1f, 0.1f));
-        light = new Light(new Vector3f(0,10000,-7000), new Vector3f(0.4f,0.4f,0.4f));
-        lights.add(light);
-        lights.add(jetLight);
 
-        lights.add(new Light(new Vector3f(100,20,-100), new Vector3f(2,0,0), new Vector3f(0.001f, 0.0001f, 0.002f)));
-        lights.add(new Light(new Vector3f(200,15,-700), new Vector3f(0,2,2), new Vector3f(0.001f, 0.0001f, 0.002f)));
-        lights.add(new Light(new Vector3f(600,20,-200), new Vector3f(2,2,0), new Vector3f(0.001f, 0.0001f, 0.002f)));
+        lights = factory.createGameLights();
+        Light jetLight = factory.createJetPackLight();
+
+        lights.add(jetLight);
 
         guis = new ArrayList<>();
         GUITexture gui = new GUITexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
@@ -215,8 +223,7 @@ public class MainGameLoop implements Runnable{
         picker = new MousePicker(camera, renderer.getProjectionMatrix());
 
         selection = new SelectableDetector();
-        selectables = new ArrayList<>();
-        solids = new ArrayList<>();
+
         selectables.add(player);
 
         for(Entity entity : allItems){
@@ -233,10 +240,19 @@ public class MainGameLoop implements Runnable{
 
 
         timer.init();
+        float shootInterval = 0;
         while (running && !display.windowShouldClose()) {
 
 
+
             elapsedTime = timer.getElapsedTime();
+            shootInterval += elapsedTime;
+
+            if( shootInterval > shoots){
+                shootInterval = 0;
+                player.shooting_allowed();
+            }
+
             accumulator += elapsedTime;
 
 
@@ -277,6 +293,7 @@ public class MainGameLoop implements Runnable{
     public void input() {
         physics.input();
         camera.input();
+        player.input();
 
         if(keyboardInput.isKeyPressed(KeyboardInput.BOXES_KEY)){
             debug = !debug;
@@ -321,6 +338,10 @@ public class MainGameLoop implements Runnable{
             renderer.processEntity(entity);
         }
         for(Enemy entity : enemies){
+            renderer.processEntity(entity);
+        }
+
+        for(Entity entity : bullets){
             renderer.processEntity(entity);
         }
 

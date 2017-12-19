@@ -17,12 +17,12 @@ public class PhysicsEngine {
     private RigidBody player;
     private boolean player_jumping;
     private boolean set_jump;
-    public static float NEW_POS_FACTOR = 1.999f;
-    public static float OLD_POS_FACTOR = 0.999f;
+    public static float NEW_POS_FACTOR = 1.99f;
+    public static float OLD_POS_FACTOR = 0.99f;
     public static int OBJECT_SPHERE = 1;
     public static int OBJECT_CUBE = 2;
     public static int STEPS = 5;
-    public boolean resting = false;
+
     private final Vector3f GRAVITY = new Vector3f(0f, -18f, 0f);
     private final Vector3f JUMP = new Vector3f(GRAVITY).mul(-10);
     private final float PLAYER_MOVE_SPEED = 0.1f;
@@ -34,6 +34,7 @@ public class PhysicsEngine {
 
     private Terrain terrain;
     private List<RigidBody> rigidBodies = new ArrayList<RigidBody>();
+    private List<RigidBody> bullets = new ArrayList<RigidBody>();
 
     private static PhysicsEngine instance;
 
@@ -59,7 +60,7 @@ public class PhysicsEngine {
 
             applyInertia();
 
-            //checkCollisions();
+            checkCollisions();
 
 
             updateBodies();
@@ -85,19 +86,19 @@ public class PhysicsEngine {
     }
 
     private void applyGravity(){
-        //for(RigidBody body: rigidBodies){
-        //    body.increaseAcceleration(GRAVITY);
-        //}
+        for(RigidBody body: bullets){
+            body.increaseAcceleration(GRAVITY);
+        }
 
         player.increaseAcceleration(GRAVITY);
     }
 
     private void applyAcceleration( float delta){
 
-        //for(RigidBody body: rigidBodies){
-        //    body.applyAcceleration(delta);
+        for(RigidBody body: bullets){
+            body.applyAcceleration(delta);
 
-        //}
+        }
         player.applyAcceleration(delta);
     }
 
@@ -114,6 +115,7 @@ public class PhysicsEngine {
                     if(pBox.getMin().y < body.getEntity().getAABB().getMax().y) {
                         float diff =  body.getEntity().getAABB().getMax().y  - pBox.getMin().y;
                         player.addPosition(new Vector3f(0, diff , 0));
+                        player.restY();
                     }
 
 
@@ -142,20 +144,30 @@ public class PhysicsEngine {
                 }
                 body.setPosition(new Vector3f(tx, ty, tz));
             }
-
-
-            float target = radius;
-
-            //body.increaseAcceleration(new Vector3f(x, y, z).sub(body.getPosition()));
-            //body.setPosition(new Vector3f(tx, ty, tz));
-
-            //}
         }
+
+        for(RigidBody body: bullets){
+            //TODO SPHERES SO FAR
+            float radius = body.getRadius();
+            Vector3f bodyPosition = body.getPosition();
+            float floor = terrain.getTerrainHeight(bodyPosition);
+
+            float tx, ty, tz;
+            tx =  Math.min(terrain.X_MAX - radius, Math.max(bodyPosition.x , terrain.X_MIN + radius));
+            tz =  Math.min(terrain.Z_MAX - radius, Math.max(bodyPosition.z , terrain.Z_MIN + radius));
+            ty =  Math.max(bodyPosition.y, floor + radius);
+
+            if(bodyPosition.y < floor + radius){
+                ty = (floor + radius);
+                body.setPosition(new Vector3f(tx, ty, tz));
+            }
+        }
+
     }
 
     private void checkCollisions(){
-        for(RigidBody a : rigidBodies ){
-            for(RigidBody b : rigidBodies ) {
+        for(RigidBody a : bullets ){
+            for(RigidBody b : bullets ) {
                 if (a.equals(b)) continue;
                 float x = a.getPosition().x - b.getPosition().x;
                 float y = a.getPosition().y - b.getPosition().y;
@@ -184,16 +196,17 @@ public class PhysicsEngine {
         }
     }
     private void applyInertia(){
-        //for(RigidBody body: rigidBodies){
-        //    body.applyInertia();
-        //}
+        for(RigidBody body: bullets){
+            body.applyInertia();
+        }
         player.applyInertia();
     }
 
     private void updateBodies(){
-        for(RigidBody body: rigidBodies){
+        for(RigidBody body: bullets){
             body.update();
         }
+        player.update();
     }
 
     public static PhysicsEngine getInstance(){
@@ -205,6 +218,10 @@ public class PhysicsEngine {
 
     public List<RigidBody> getRigidBodies() {
         return rigidBodies;
+    }
+
+    public List<RigidBody> getBullets() {
+        return bullets;
     }
 
     public  void input(){

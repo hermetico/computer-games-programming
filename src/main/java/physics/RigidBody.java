@@ -66,6 +66,9 @@ public class RigidBody {
     public void setPosition(Vector3f position){
         particles.get(0).setPosition(position);
     }
+    public void setOldPosition(Vector3f position){
+        particles.get(0).setOldPosition(position);
+    }
 
     public void addPosition(Vector3f position){
         particles.get(0).addPosition(position);
