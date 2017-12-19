@@ -71,11 +71,11 @@ public class EntityFactory {
 
         Random random = new Random();
 
-        for(int i = 0; i < 1000; i++){
+        for(int i = 0; i < 300; i++){
 
-            float x = random.nextFloat() * 100;
-            float z = random.nextFloat() * -100;
-            float y = random.nextFloat() * 200;
+            float x = random.nextFloat() * 50;
+            float z = random.nextFloat() * -50;
+            float y = random.nextFloat() * 100;
 
             Entity n = new Entity(fernModel, new Vector3f(x,y,z),
                     0,
