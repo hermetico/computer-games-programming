@@ -25,8 +25,8 @@ public class PhysicsEngine {
     public boolean resting = false;
     private final Vector3f GRAVITY = new Vector3f(0f, -18f, 0f);
     private final Vector3f JUMP = new Vector3f(GRAVITY).mul(-10);
-    private final float PLAYER_MOVE_SPEED = 1000;
-    private final float PLAYER_TURN_SPEED = 35;
+    private final float PLAYER_MOVE_SPEED = 0.1f;
+    private final float PLAYER_TURN_SPEED = 50;
 
     private float currentSpeed = 0;
     private float currentTurnSpeed = 0;
@@ -70,7 +70,9 @@ public class PhysicsEngine {
 
                 float dx = (float) (distance * Math.sin(Math.toRadians(theplayer.getRotY())));
                 float dz = (float) (distance * Math.cos(Math.toRadians(theplayer.getRotY())));
-                player.increaseAcceleration(new Vector3f(dx, 0, dz));
+                //player.increaseAcceleration(new Vector3f(dx, 0, dz));
+                player.addPosition(new Vector3f(dx, 0, dz));
+
             }else{
                 player.decelerateXZ(delta);
             }
@@ -93,9 +95,11 @@ public class PhysicsEngine {
 
     private void applyAcceleration( float delta){
 
-        for(RigidBody body: rigidBodies){
-            body.applyAcceleration(delta);
-        }
+        //for(RigidBody body: rigidBodies){
+        //    body.applyAcceleration(delta);
+
+        //}
+        player.applyAcceleration(delta);
     }
 
 
@@ -181,9 +185,10 @@ public class PhysicsEngine {
         }
     }
     private void applyInertia(){
-        for(RigidBody body: rigidBodies){
-            body.applyInertia();
-        }
+        //for(RigidBody body: rigidBodies){
+        //    body.applyInertia();
+        //}
+        player.applyInertia();
     }
 
     private void updateBodies(){

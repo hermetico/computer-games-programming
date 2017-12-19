@@ -14,7 +14,7 @@ BLACK = 0, 0, 0
 WHITE = 255, 255, 255
 RED = 255, 0, 0
 GREEN = 0, 255, 0
-GRAVITY = np.array((0, -9.1)) * 10
+GRAVITY = np.array((0, -9.1)) * 5
 TRANSFORM = np.array((1, -1))
 
 X = 0
@@ -251,13 +251,14 @@ def resolve_collision( collision ):
     response = np.array(collision.normal * collision.depth)
     e1, e2 = collision.edge.a, collision.edge.b
     if  math.fabs(e1.pos[X] - e2.pos[X]) > math.fabs(e1.pos[Y] - e2.pos[Y]):
-        T = (collision.vertex.pos[X] -  response[X] - e1.pos[X]) / e2.pos[X] - e1.pos[X]
+        T = (collision.vertex.pos[X] - response[X] - e1.pos[X]) / e2.pos[X] - e1.pos[X]
     else:
-        T = (collision.vertex.pos[Y] -  response[Y] - e1.pos[Y]) / e2.pos[Y] - e1.pos[Y]
+        T = (collision.vertex.pos[Y] - response[Y] - e1.pos[Y]) / e2.pos[Y] - e1.pos[Y]
 
-    factor = 1.0 / (T*T + ( 1 - T) * (1 - T))
-    e1.pos -= response * (1 - T ) * 0.5 * factor #* 1. / e1.owner.mass # adds the mass of the owner
-    e2.pos -= response * T  * 0.5 * factor
+    factor = 1.0 / (T*T + (1 - T) * (1 - T))
+
+    e1.pos -= response * (1 - T) * 0.5 * factor #* 1. / e1.owner.mass # adds the mass of the owner
+    e2.pos -= response * T  * 0.5 * factor #* 1. / e1.owner.mass # adds the mass of the owner
     collision.vertex.pos += response * 0.5 #* 1. / collision.vertex.owner.mass # here too
 
 
@@ -317,7 +318,7 @@ def inertia(delta):
 
 
 def step():
-    iterations = 2
+    iterations = 3
     delta = 1. / FPS / iterations
 
     for _ in xrange(iterations):
