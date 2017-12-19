@@ -38,6 +38,7 @@ public class PhysicsEngine {
     private Terrain terrain;
     private List<RigidBody> rigidBodies = new ArrayList<RigidBody>();
     private List<RigidBody> bullets = new ArrayList<RigidBody>();
+    private List<RigidBody> cubes = new ArrayList<RigidBody>();
 
     private static PhysicsEngine instance;
     private EntityFactory factory;
@@ -240,6 +241,10 @@ public class PhysicsEngine {
 
     public List<RigidBody> getBullets() {
         return bullets;
+    }
+
+    public List<RigidBody> getCubes() {
+        return cubes;
     }
 
     public  void input(){

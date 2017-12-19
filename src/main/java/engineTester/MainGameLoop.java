@@ -63,6 +63,8 @@ public class MainGameLoop implements Runnable{
     PhysicsEngine physics;
     EntityFactory factory;
     List<Entity> bullets;
+    List<RigidBody> cubes;
+    List<Entity> visible;
 
     public static void main(String[] args){
         try {
@@ -130,9 +132,11 @@ public class MainGameLoop implements Runnable{
         allItems = new ArrayList<>();
         bullets = new ArrayList<>();
         enemies = new ArrayList<Enemy>();
+        cubes = new ArrayList<RigidBody>();
+        visible = new ArrayList<Entity>();
         selectables = new ArrayList<>();
         solids = new ArrayList<>();
-        factory.init(bullets, selectables);
+        factory.init(bullets, cubes, visible, selectables);
 
 
 
@@ -149,34 +153,9 @@ public class MainGameLoop implements Runnable{
         physics.init(terrain);
 
 
-        // FERNS
-        //ModelData dataFern = OBJFileLoader.loadOBJ("fern");
-        ModelData dataFern = OBJFileLoader.loadOBJ("cube");
-        RawEntity fern = loader.loadToVAO(dataFern);
+        // CUBES
 
-        //ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
-        //fernAtlasTexture.setNumberOfRows(2);
-        ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("purple"));
-        TexturedModel fernModel = new TexturedModel(fern,fernAtlasTexture);
-
-
-        Random random = new Random();
-
-        for(int i = 0; i < 500; i++){
-            float x = random.nextFloat() * terrain.SIZE;
-            float z = random.nextFloat() * -terrain.SIZE;
-            float y = terrain.getTerrainHeight(x, z) + random.nextFloat() * 100;
-
-            Entity n = new Entity(fernModel, new Vector3f(x,y,z),
-                    0,
-                    random.nextFloat() * 180f,
-                    0,
-                    1f,
-                    random.nextInt(4));
-            n.setEntityDescription("fern " + i);
-            allItems.add(n);
-        }
-
+        factory.createCube();
 	    // enemies
 
         /*ModelData dataSheep = OBJFileLoader.loadOBJ("cube");
@@ -334,7 +313,7 @@ public class MainGameLoop implements Runnable{
         renderer.processEntity(player);
         renderer.processTerrain(terrain);
 
-        for(Entity entity : allItems){
+        for(Entity entity : visible){
             renderer.processEntity(entity);
         }
 
