@@ -5,6 +5,7 @@ import models.RawEntity;
 import models.TexturedModel;
 import org.joml.Vector3f;
 import physics.PhysicsEngine;
+import physics.RigidBody;
 import renderEngine.Loader;
 import textures.ModelTexture;
 import utils.OBJC.ModelData;
@@ -12,20 +13,26 @@ import utils.OBJC.OBJFileLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class EntityFactory {
     private static EntityFactory instance;
     private List<Entity> bullets;
+    private List<RigidBody> cubes;
+    private List<Entity> visible;
     List<Selectable> selectables;
     private Loader loader = new Loader();
     private PhysicsEngine physics;
 
     private EntityFactory(){}
 
-    public void init(List<Entity> bullets, List<Selectable> selectables){
+    public void init(List<Entity> bullets, List<RigidBody> cubes, List<Entity> visible, List<Selectable> selectables){
         physics = PhysicsEngine.getInstance();
         this.bullets = bullets;
+        this.cubes = cubes;
+        this.visible = visible;
         this.selectables = selectables;
+
 
     }
 
@@ -49,6 +56,42 @@ public class EntityFactory {
         physics.getBullets().add(bullet.getBody());
 
     }
+    public void createCube(){
+
+        // FERNS
+        //ModelData dataFern = OBJFileLoader.loadOBJ("fern");
+        ModelData dataFern = OBJFileLoader.loadOBJ("cube");
+        RawEntity cube = loader.loadToVAO(dataFern);
+
+        //ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
+        //fernAtlasTexture.setNumberOfRows(2);
+        ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("purple"));
+        TexturedModel fernModel = new TexturedModel(cube,fernAtlasTexture);
+
+
+        Random random = new Random();
+
+        for(int i = 0; i < 500; i++){
+
+            float x = random.nextFloat() * 200;
+            float z = random.nextFloat() * -200;
+            float y = random.nextFloat() * 100;
+
+            Entity n = new Entity(fernModel, new Vector3f(x,y,z),
+                    0,
+                    random.nextFloat() * 180f,
+                    0,
+                    1f,
+                    random.nextInt(4));
+            n.setEntityDescription("cube " + i);
+            visible.add(n);
+            RigidBody m = new RigidBody(PhysicsEngine.OBJECT_SPHERE,n ,30);
+            cubes.add(m);
+            physics.getRigidBodies().add(m);
+        }
+    }
+
+
 
     public static EntityFactory getInstance(){
         if(instance == null){
