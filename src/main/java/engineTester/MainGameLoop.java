@@ -150,7 +150,7 @@ public class MainGameLoop implements Runnable{
         allItems = new ArrayList<>();
         Random random = new Random();
 
-        for(int i = 0; i < 400; i++){
+        for(int i = 0; i < 0; i++){
             float x = random.nextFloat() * terrain.SIZE;
             float z = random.nextFloat() * -terrain.SIZE;
             float y = terrain.getTerrainHeight(x, z) + random.nextFloat() * 100;
@@ -188,9 +188,11 @@ public class MainGameLoop implements Runnable{
         }
         */
         lights = new ArrayList<>();
-
+        Light jetLight = new Light(new Vector3f(0,0,0), new Vector3f(1,0,0), new Vector3f(0.1f, 0.1f, 0.1f));
         light = new Light(new Vector3f(0,10000,-7000), new Vector3f(0.4f,0.4f,0.4f));
         lights.add(light);
+        lights.add(jetLight);
+
         lights.add(new Light(new Vector3f(100,20,-100), new Vector3f(2,0,0), new Vector3f(0.001f, 0.0001f, 0.002f)));
         lights.add(new Light(new Vector3f(200,15,-700), new Vector3f(0,2,2), new Vector3f(0.001f, 0.0001f, 0.002f)));
         lights.add(new Light(new Vector3f(600,20,-200), new Vector3f(2,2,0), new Vector3f(0.001f, 0.0001f, 0.002f)));
@@ -205,7 +207,7 @@ public class MainGameLoop implements Runnable{
         TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
                 loader.loadTexture("purple")));
         player = new Player(bunny, new Vector3f(5, 15, -5), 0,90, 0,1f);
-
+        player.setJetLight(jetLight);
 
         //camera = new Camera(enemies.get(0));
         camera = new Camera(player);
@@ -296,7 +298,7 @@ public class MainGameLoop implements Runnable{
         //for(Enemy entity : enemies) {
         //    entity.update(interval, terrain, player.getPosition());
         //}
-        player.update(interval, terrain, solids);
+        player.update();
         camera.update(interval);
         skybox.update(interval);
         picker.update();

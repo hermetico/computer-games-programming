@@ -70,7 +70,6 @@ public class PhysicsEngine {
 
                 float dx = (float) (distance * Math.sin(Math.toRadians(theplayer.getRotY())));
                 float dz = (float) (distance * Math.cos(Math.toRadians(theplayer.getRotY())));
-                //player.increaseAcceleration(new Vector3f(dx, 0, dz));
                 player.addPosition(new Vector3f(dx, 0, dz));
 
             }else{
