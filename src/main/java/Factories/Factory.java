@@ -44,7 +44,7 @@ public class Factory {
 
     public List<Light> createGameLights(){
         List<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Vector3f(0,100,0), new Vector3f(0.4f,0.4f,0.4f)));
+        lights.add(new Light(new Vector3f(0,100,0), new Vector3f(0.8f,0.8f,0.8f)));
         lights.add(new Light(new Vector3f(50,500,-50), new Vector3f(1,1,1), new Vector3f(0.4f, 0.4f, 0.4f)));
         return lights;
     }
