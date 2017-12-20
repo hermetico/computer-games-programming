@@ -1,5 +1,6 @@
 package entities;
 
+import Factories.Factory;
 import inputs.KeyboardInput;
 import models.TexturedModel;
 import org.joml.Vector3f;
@@ -11,7 +12,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 
 public class Player extends Entity {
     private KeyboardInput keyboardInput;
-    private EntityFactory  factory = EntityFactory.getInstance();
+    private Factory factory = Factory.getInstance();
     private Light jetLight;
     private int MAX_SHOTS = 1000;
     private boolean shooting = false;

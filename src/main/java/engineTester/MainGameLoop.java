@@ -1,5 +1,6 @@
 package engineTester;
 
+import Factories.Factory;
 import GUI.GUIRenderer;
 import GUI.GUITexture;
 import entities.*;
@@ -8,9 +9,6 @@ import inputs.KeyboardInput;
 import inputs.MouseInput;
 import inputs.MousePicker;
 import inputs.SelectableDetector;
-import models.RawEntity;
-import models.TexturedModel;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import physics.PhysicsEngine;
 import physics.RigidBody;
@@ -19,14 +17,9 @@ import skybox.Skybox;
 import terrains.Terrain;
 import terrains.TerrainTexture;
 import terrains.TerrainTexturePack;
-import textures.ModelTexture;
-import utils.OBJC.ModelData;
-import utils.OBJC.OBJFileLoader;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
 
 
 public class MainGameLoop implements Runnable{
@@ -61,7 +54,7 @@ public class MainGameLoop implements Runnable{
     SelectableDetector selection;
     List<Selectable> selectables;
     PhysicsEngine physics;
-    EntityFactory factory;
+    Factory factory;
     List<Entity> bullets;
     List<RigidBody> cubes;
     List<Entity> visible;
@@ -116,7 +109,7 @@ public class MainGameLoop implements Runnable{
         mouseInput.init(display.getWindowHandle());
         skybox = new Skybox(loader);
         renderer.init(display.getWidth(), display.getHeight(), skybox);
-        factory = EntityFactory.getInstance();
+        factory = Factory.getInstance();
 
 
 
@@ -168,6 +161,7 @@ public class MainGameLoop implements Runnable{
         //camera = new Camera(enemies.get(0));
         camera = new Camera(player);
         guiRenderer = new GUIRenderer(loader);
+
         picker = new MousePicker(camera, renderer.getProjectionMatrix());
 
         selection = new SelectableDetector();

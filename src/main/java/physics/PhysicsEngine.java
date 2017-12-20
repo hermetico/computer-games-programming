@@ -1,7 +1,7 @@
 package physics;
 
 import entities.Entity;
-import entities.EntityFactory;
+import Factories.Factory;
 import inputs.KeyboardInput;
 import org.joml.Vector3f;
 import terrains.Terrain;
@@ -41,7 +41,7 @@ public class PhysicsEngine {
     private List<RigidBody> bullets = new ArrayList<RigidBody>();
 
     private static PhysicsEngine instance;
-    private EntityFactory factory;
+    private Factory factory;
 
     private float currentMaxHeight = 0.0f;
     private int shootedCubes = 0;
@@ -53,7 +53,7 @@ public class PhysicsEngine {
     public void init(Terrain terrain){
         this.terrain = terrain;
         this.keyboardInput = KeyboardInput.getInstance();
-        factory = EntityFactory.getInstance();
+        factory = Factory.getInstance();
     }
 
     public void update(float delta){

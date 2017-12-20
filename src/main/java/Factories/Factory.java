@@ -1,5 +1,9 @@
-package entities;
+package Factories;
 
+import entities.Bullet;
+import entities.Entity;
+import entities.Light;
+import entities.Player;
 import entities.extensions.Selectable;
 import models.RawEntity;
 import models.TexturedModel;
@@ -16,8 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-public class EntityFactory {
-    private static EntityFactory instance;
+public class Factory {
+    private static Factory instance;
     private List<Entity> bullets;
     private List<RigidBody> cubes;
     private List<Entity> visible;
@@ -25,7 +29,7 @@ public class EntityFactory {
     private Loader loader = new Loader();
     private PhysicsEngine physics;
 
-    private EntityFactory(){}
+    private Factory(){}
 
     public void init(List<Entity> bullets, List<RigidBody> cubes, List<Entity> visible, List<Selectable> selectables){
         physics = PhysicsEngine.getInstance();
@@ -110,9 +114,9 @@ public class EntityFactory {
 
 
 
-    public static EntityFactory getInstance(){
+    public static Factory getInstance(){
         if(instance == null){
-            instance = new EntityFactory();
+            instance = new Factory();
         }
         return instance;
     }
