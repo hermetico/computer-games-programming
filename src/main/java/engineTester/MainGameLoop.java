@@ -87,7 +87,7 @@ public class MainGameLoop implements Runnable{
         mouseInput = MouseInput.getInstance();
         keyboardInput = KeyboardInput.getInstance();
         physics = PhysicsEngine.getInstance();
-        var = AudioMaster.getInstance();
+        var = AudioMaster.getInstance2();
 
     }
 
@@ -236,7 +236,6 @@ public class MainGameLoop implements Runnable{
 
     protected void update(float interval) {
 
-        var.setListenerData(player.getPosition().x, player.getPosition().y, player.getPosition().z);
         player.update();
         camera.update(interval);
         skybox.update(interval);
@@ -274,10 +273,8 @@ public class MainGameLoop implements Runnable{
         final int buffer = var.loadSound("audio/ChillingMusic.wav");
         final Source source = new Source();
         source.setLooping(true);
-        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
         source.play(buffer);
-        source.delete();
-        var.cleanUp();
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
     }
 
 }

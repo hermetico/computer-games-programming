@@ -117,6 +117,7 @@ public class PhysicsEngine {
         }
 
         if( restoreCubes ){
+            this.soundCloud();
             factory.restoreAllCubes();
             restoreCubes = false;
         }
@@ -163,6 +164,7 @@ public class PhysicsEngine {
                         if( body.getEntity().getAABB().getMax().y > currentMaxHeight){
                             hideBelowMaxHeight = true;
                             currentMaxHeight = body.getEntity().getAABB().getMax().y;
+                            this.soundCloud();
                         }
                     }
 
@@ -227,12 +229,10 @@ public class PhysicsEngine {
                 RigidBody b = iteratorb.next();
                 if (aBox.colliding(b.getEntity().getAABB())) {
                     // going down?
-
                     removeVisible(a.getEntity());
                     removeVisible(b.getEntity());
                     iteratorb.remove();
                     iterator.remove();
-
                     shootedCube(b);
                 }
             }
@@ -345,14 +345,15 @@ public class PhysicsEngine {
     }
 
     private void shootedCube(RigidBody cube){
-        this.soundJump(cube.getPosition());
+        this.soundDesolve();
         shootedCubes++;
         factory.removeCube(cube);
     }
 
     public void soundJump(Vector3f sourceIN){
-        final int buffer = var.loadSound("audio/bounce.wav");
+        final int buffer = var.loadSound("audio/bounce2.wav");
         final Source source = new Source();
+        source.setVolume(1550.0f);
         source.setPosition(sourceIN.x, sourceIN.y, sourceIN.z);
         this.var.setListenerData(player.getPosition().x, player.getPosition().y, player.getPosition().z);
         source.setLooping(false);
@@ -365,6 +366,28 @@ public class PhysicsEngine {
 
     public void soundShoot(){
         final int buffer = var.loadSound("audio/shoot.wav");
+        final Source source = new Source();
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+        this.var.setListenerData(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+        source.setLooping(false);
+        source.play(buffer);
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+    }
+
+    public void soundDesolve(){
+        final int buffer = var.loadSound("audio/desolve.wav");
+        final Source source = new Source();
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+        this.var.setListenerData(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+        source.setLooping(false);
+        source.setVolume(0.7f);
+        source.play(buffer);
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+    }
+
+
+    public void soundCloud(){
+        final int buffer = var.loadSound("audio/cloud.wav");
         final Source source = new Source();
         source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
         this.var.setListenerData(player.getPosition().x, player.getPosition().y, player.getPosition().z);
