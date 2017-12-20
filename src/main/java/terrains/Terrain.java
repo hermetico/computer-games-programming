@@ -16,7 +16,7 @@ public class Terrain {
     public static final float Z_MAX = 0;
     public static final float Z_MIN = -100;
     public static final float SIZE = 100;
-    public static final Vector3f CENTER = new Vector3f(25f, 0, -25f); // X,Z
+    public static final Vector3f CENTER = new Vector3f(50f, 0, -50f); // X,Z
     private static final float MAX_HEIGHT = 2;// flat 50;
     private static final float MAX_PIXEL_VALUE  = 256 * 256 * 256;
 

@@ -44,12 +44,13 @@ public class Factory {
 
     public List<Light> createGameLights(){
         List<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Vector3f(0,1000,0), new Vector3f(0.4f,0.4f,0.4f)));
+        lights.add(new Light(new Vector3f(0,100,0), new Vector3f(0.4f,0.4f,0.4f)));
+        lights.add(new Light(new Vector3f(50,500,-50), new Vector3f(1,1,1), new Vector3f(0.4f, 0.4f, 0.4f)));
         return lights;
     }
 
     public Light createJetPackLight(){
-        return new Light(new Vector3f(0,0,0), new Vector3f(1,0,0), new Vector3f(0.1f, 0.01f, 0.1f));
+        return new Light(new Vector3f(0,0,0), new Vector3f(0,0.5f,0.8f), new Vector3f(0.1f, 0.01f, 0.1f));
     }
 
     public void createBullet( Vector3f position, Vector3f old_position){
@@ -64,14 +65,13 @@ public class Factory {
     }
     public void createCube(){
 
-        // cubes
-        //ModelData dataFern = OBJFileLoader.loadOBJ("fern");
-        ModelData dataFern = OBJFileLoader.loadOBJ("cube");
+
+        ModelData dataFern = OBJFileLoader.loadOBJ("cloud");
         RawEntity cube = loader.loadToVAO(dataFern);
 
         //ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("fernAtlas"));
         //fernAtlasTexture.setNumberOfRows(2);
-        ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("purple"));
+        ModelTexture fernAtlasTexture = new ModelTexture(loader.loadTexture("white"));
         TexturedModel fernModel = new TexturedModel(cube,fernAtlasTexture);
 
 
