@@ -183,10 +183,10 @@ public class PhysicsEngine {
         float tx, ty, tz;
         tx =  Math.min(terrain.X_MAX - radius, Math.max(playerPosition.x , terrain.X_MIN + radius));
         tz =  Math.min(terrain.Z_MAX - radius, Math.max(playerPosition.z , terrain.Z_MIN + radius));
-        ty =  Math.max(playerPosition.y, floor + radius);
+
 
         if(playerPosition.y < floor + radius){
-            ty = (floor + radius);
+            ty =(floor + radius);
 
 
                 player_jumping = false;

@@ -98,8 +98,8 @@ public class Camera {
 
     private void calculateAngleAroundPlayer(){
         if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY)){
-            //angleAroundObserved += mouseInput.getXOffset() * 0.3f;
-            this.observed.increaseRotation(0,mouseInput.getXOffset() * 0.3f,0);
+            angleAroundObserved += mouseInput.getXOffset() * 0.3f;
+            //this.observed.increaseRotation(0,mouseInput.getXOffset() * 0.3f,0);
         }
     }
 

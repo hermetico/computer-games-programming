@@ -50,7 +50,7 @@ public class Factory {
     }
 
     public Light createJetPackLight(){
-        return new Light(new Vector3f(0,0,0), new Vector3f(0,0.5f,0.8f), new Vector3f(0.1f, 0.01f, 0.1f));
+        return new Light(new Vector3f(0,0,0), new Vector3f(1,1,1), new Vector3f(0.05f, 0.05f, 0.05f));
     }
 
     public void createBullet( Vector3f position, Vector3f old_position){
@@ -113,10 +113,10 @@ public class Factory {
     }
     public Player createPlayer(){
 
-        ModelData bunnyData = OBJFileLoader.loadOBJ("sphere");
+        ModelData bunnyData = OBJFileLoader.loadOBJ("penguin");
         RawEntity bunnyEntity = loader.loadToVAO(bunnyData);
         TexturedModel bunny = new TexturedModel(bunnyEntity, new ModelTexture(
-                loader.loadTexture("purple")));
+                loader.loadTexture("penguin")));
         Player player = new Player(bunny, new Vector3f(5, 15, -5), 0,90, 0,1f);
         Light jetLight = createJetPackLight();
         player.setJetLight(jetLight);

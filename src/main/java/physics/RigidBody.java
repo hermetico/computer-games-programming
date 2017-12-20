@@ -61,7 +61,7 @@ public class RigidBody {
     }
 
     public float getRadius(){
-        return this.entity.getSize().y * this.entity.getScale() / 2;
+        return this.entity.getSize().y * this.entity.getScale() / 4;
     }
 
     public void setPosition(Vector3f position){
