@@ -10,10 +10,11 @@ public class Test
 {
     public static void main(final String[] arg) throws IOException, InterruptedException
     {
-        AudioMaster.init();
-        AudioMaster.setListenerData(0, 0, 0);
+        AudioMaster var = AudioMaster.getInstance();
+        var.init();
+        var.setListenerData(0, 0, 0);
 
-        final int buffer = AudioMaster.loadSound("audio/bounce.wav");
+        final int buffer = var.loadSound("audio/bounce.wav");
         final Source source = new Source();
         source.setLooping(true);
         source.play(buffer);
@@ -40,6 +41,6 @@ public class Test
         }
 
         source.delete();
-        AudioMaster.cleanUp();
+        var.cleanUp();
     }
 }

@@ -1,5 +1,7 @@
 package physics;
 
+import audio.AudioMaster;
+import audio.Source;
 import entities.Entity;
 import Factories.Factory;
 import inputs.KeyboardInput;
@@ -48,9 +50,14 @@ public class PhysicsEngine {
     private boolean hideBelowMaxHeight = false;
     private boolean restoreCubes = false;
 
-    private PhysicsEngine(){}
+    AudioMaster var;
+
+
+    private PhysicsEngine() {}
 
     public void init(Terrain terrain){
+        var = AudioMaster.getInstance();
+        var.init();
         this.terrain = terrain;
         this.keyboardInput = KeyboardInput.getInstance();
         factory = Factory.getInstance();
@@ -310,6 +317,7 @@ public class PhysicsEngine {
         }
 
         if(keyboardInput.isKeyPressed(GLFW_KEY_SPACE)){
+            this.soundJump(player.getPosition());
             if(!player_jumping) {
                 player_jumping = true;
                 player.increaseAcceleration(new Vector3f(JUMP).mul(10));
@@ -337,8 +345,32 @@ public class PhysicsEngine {
     }
 
     private void shootedCube(RigidBody cube){
+        this.soundJump(cube.getPosition());
         shootedCubes++;
         factory.removeCube(cube);
+    }
+
+    public void soundJump(Vector3f sourceIN){
+        final int buffer = var.loadSound("audio/bounce.wav");
+        final Source source = new Source();
+        source.setPosition(sourceIN.x, sourceIN.y, sourceIN.z);
+        this.var.setListenerData(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+        source.setLooping(false);
+
+        if(!source.isPlaying()){
+            source.play(buffer);
+        }
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+    }
+
+    public void soundShoot(){
+        final int buffer = var.loadSound("audio/shoot.wav");
+        final Source source = new Source();
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+        this.var.setListenerData(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+        source.setLooping(false);
+        source.play(buffer);
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
     }
 
 }

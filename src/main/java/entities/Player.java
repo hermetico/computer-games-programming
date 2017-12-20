@@ -1,6 +1,8 @@
 package entities;
 
 import Factories.Factory;
+import audio.AudioMaster;
+import audio.Source;
 import inputs.KeyboardInput;
 import models.TexturedModel;
 import org.joml.Vector3f;
@@ -17,6 +19,8 @@ public class Player extends Entity {
     private int MAX_SHOTS = 1000;
     private boolean shooting = false;
     private RigidBody body;
+
+
     //private RigidBody
     public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         super(model, position, rotX, rotY, rotZ, scale);
@@ -44,6 +48,7 @@ public class Player extends Entity {
         if(keyboardInput.isKeyPressed(GLFW_KEY_S)){
             if(MAX_SHOTS > 0) {
                 MAX_SHOTS--;
+                PhysicsEngine.getInstance().soundShoot();
                 shot();
             }
         }
