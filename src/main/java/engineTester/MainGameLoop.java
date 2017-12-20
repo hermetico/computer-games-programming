@@ -3,6 +3,8 @@ package engineTester;
 import Factories.Factory;
 import GUI.GUIRenderer;
 import GUI.GUITexture;
+import audio.AudioMaster;
+import audio.Source;
 import entities.*;
 import entities.extensions.Selectable;
 import inputs.KeyboardInput;
@@ -15,6 +17,11 @@ import physics.RigidBody;
 import renderEngine.*;
 import skybox.Skybox;
 import terrains.Terrain;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +60,8 @@ public class MainGameLoop implements Runnable{
     Factory factory;
     List<RigidBody> cubes;
     List<Entity> visible;
+    AudioMaster var;
+
 
     public static void main(String[] args){
         try {
@@ -76,6 +85,7 @@ public class MainGameLoop implements Runnable{
         mouseInput = MouseInput.getInstance();
         keyboardInput = KeyboardInput.getInstance();
         physics = PhysicsEngine.getInstance();
+        var = AudioMaster.getInstance();
 
     }
 
@@ -105,12 +115,11 @@ public class MainGameLoop implements Runnable{
         skybox = new Skybox(loader);
         renderer.init(display.getWidth(), display.getHeight(), skybox);
         factory = Factory.getInstance();
-
-
+        var.init();
 
     }
 
-    protected void gameLoop() {
+    protected void gameLoop() throws Exception {
         float elapsedTime;
         float accumulator = 0f;
         float interval = 1f / TARGET_UPS;
@@ -147,6 +156,7 @@ public class MainGameLoop implements Runnable{
         selection = new SelectableDetector();
 
         timer.init();
+        this.playMusic();
 
         float shootInterval = 0;
         while (running && !display.windowShouldClose()) {
@@ -173,7 +183,6 @@ public class MainGameLoop implements Runnable{
                 accumulator -= interval;
 
             }
-
             this.render();
 
             if (!display.isvSync()) {
@@ -184,6 +193,7 @@ public class MainGameLoop implements Runnable{
         guiRenderer.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
+        var.cleanUp();
     }
 
     private void sync() {
@@ -220,6 +230,7 @@ public class MainGameLoop implements Runnable{
 
     protected void update(float interval) {
 
+        var.setListenerData(player.getPosition().x, player.getPosition().y, player.getPosition().z);
         player.update();
         skybox.update(interval);
         picker.update();
@@ -251,6 +262,15 @@ public class MainGameLoop implements Runnable{
 
     }
 
+    protected void playMusic() throws Exception{
 
+        final int buffer = var.loadSound("audio/ChillingMusic.wav");
+        final Source source = new Source();
+        source.setLooping(true);
+        source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+        source.play(buffer);
+        source.delete();
+        var.cleanUp();
+    }
 
 }

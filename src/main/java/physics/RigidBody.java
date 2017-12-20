@@ -29,6 +29,7 @@ public class RigidBody {
 
     public void increaseAcceleration(Vector3f acceleration){
         for(Particle particle: particles){
+
             particle.increaseAcceleration(acceleration);
         }
     }
