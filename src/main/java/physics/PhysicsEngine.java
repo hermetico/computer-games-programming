@@ -27,7 +27,7 @@ public class PhysicsEngine {
     public static int STEPS = 2;
 
     private final Vector3f GRAVITY = new Vector3f(0f, -18f, 0f);
-    private final Vector3f JUMP = new Vector3f(GRAVITY).mul(-5);
+    private final float JUMP_POWER = 0.5f;
     private final float PLAYER_MOVE_SPEED = 0.5f;
     private final float PLAYER_TURN_SPEED = 50;
 
@@ -293,17 +293,17 @@ public class PhysicsEngine {
 
     public  void input(){
 
-        if (keyboardInput.isKeyPressed(GLFW_KEY_UP)) {
+        if (keyboardInput.isKeyPressed(GLFW_KEY_W)) {
             this.currentSpeed = PLAYER_MOVE_SPEED;
-        }else if (keyboardInput.isKeyPressed(GLFW_KEY_DOWN)) {
+        }else if (keyboardInput.isKeyPressed(GLFW_KEY_S)) {
             this.currentSpeed = -PLAYER_MOVE_SPEED;
         }else{
             this.currentSpeed = 0f;
         }
 
-        if (keyboardInput.isKeyPressed(GLFW_KEY_RIGHT)) {
+        if (keyboardInput.isKeyPressed(GLFW_KEY_D)) {
             this.currentTurnSpeed = -PLAYER_TURN_SPEED;
-        }else if (keyboardInput.isKeyPressed(GLFW_KEY_LEFT)) {
+        }else if (keyboardInput.isKeyPressed(GLFW_KEY_A)) {
             this.currentTurnSpeed = PLAYER_TURN_SPEED;
         }else{
             this.currentTurnSpeed = 0;
@@ -312,7 +312,7 @@ public class PhysicsEngine {
         if(keyboardInput.isKeyPressed(GLFW_KEY_SPACE)){
             if(!player_jumping) {
                 player_jumping = true;
-                player.increaseAcceleration(new Vector3f(JUMP).mul(10));
+                player.addPosition(new Vector3f(0, JUMP_POWER, 0));
             }
         }
 
