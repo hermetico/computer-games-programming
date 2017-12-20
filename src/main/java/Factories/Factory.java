@@ -1,9 +1,6 @@
 package Factories;
 
-import entities.Bullet;
-import entities.Entity;
-import entities.Light;
-import entities.Player;
+import entities.*;
 import entities.extensions.Selectable;
 import models.RawEntity;
 import models.TexturedModel;
@@ -11,6 +8,9 @@ import org.joml.Vector3f;
 import physics.PhysicsEngine;
 import physics.RigidBody;
 import renderEngine.Loader;
+import terrains.Terrain;
+import terrains.TerrainTexture;
+import terrains.TerrainTexturePack;
 import textures.ModelTexture;
 import utils.OBJC.ModelData;
 import utils.OBJC.OBJFileLoader;
@@ -21,17 +21,19 @@ import java.util.List;
 import java.util.Random;
 
 public class Factory {
+
+    private static final int NUM_CLOUDS = 200;
     private static Factory instance;
-    private List<Entity> bullets;
     private List<RigidBody> cubes;
     private List<Entity> visible;
     List<Selectable> selectables;
     private Loader loader = new Loader();
     private PhysicsEngine physics;
+    private Terrain terrain;
 
     private Factory(){}
 
-    public void init(List<Entity> bullets, List<RigidBody> cubes, List<Entity> visible, List<Selectable> selectables){
+    public void init(List<RigidBody> cubes, List<Entity> visible, List<Selectable> selectables){
         physics = PhysicsEngine.getInstance();
         this.cubes = cubes;
         this.visible = visible;
@@ -42,7 +44,7 @@ public class Factory {
 
     public List<Light> createGameLights(){
         List<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Vector3f(0,10000,-7000), new Vector3f(0.4f,0.4f,0.4f)));
+        lights.add(new Light(new Vector3f(0,1000,0), new Vector3f(0.4f,0.4f,0.4f)));
         return lights;
     }
 
@@ -62,7 +64,7 @@ public class Factory {
     }
     public void createCube(){
 
-        // FERNS
+        // cubes
         //ModelData dataFern = OBJFileLoader.loadOBJ("fern");
         ModelData dataFern = OBJFileLoader.loadOBJ("cube");
         RawEntity cube = loader.loadToVAO(dataFern);
@@ -75,27 +77,40 @@ public class Factory {
 
         Random random = new Random();
 
-        for(int i = 0; i < 300; i++){
+        for(int i = 0; i < NUM_CLOUDS; i++){
 
-            float x = random.nextFloat() * 50;
-            float z = random.nextFloat() * -50;
-            float y = random.nextFloat() * 100;
+            float x = (terrain.X_MAX / 2) + random.nextFloat() * terrain.X_MAX / 2;
+            float z = (terrain.Z_MIN / 2) +random.nextFloat() * terrain.Z_MIN / 2;
+            float y = random.nextFloat() * 200;
 
-            Entity n = new Entity(fernModel, new Vector3f(x,y,z),
+            Cloud c = new Cloud(fernModel, new Vector3f(x,y,z),
                     0,
-                    random.nextFloat() * 180f,
+                    0,
                     0,
                     1f,
-                    random.nextInt(4));
-            n.setEntityDescription("cube " + i);
-            visible.add(n);
-            RigidBody m = new RigidBody(PhysicsEngine.OBJECT_SPHERE,n ,30);
+                    terrain.CENTER);
+            c.setEntityDescription("cube " + i);
+            visible.add(c);
+            RigidBody m = new RigidBody(PhysicsEngine.OBJECT_SPHERE,c ,30);
+            c.setBody(m); // circular reference ! :(
             cubes.add(m);
             physics.getCubes().add(m);
-            this.selectables.add(n);
+            this.selectables.add(c);
         }
     }
 
+    public Terrain createTerrain(){
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("tiles"));
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+
+        TerrainTexturePack texturePack= new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+
+        terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
+        return terrain;
+    }
     public Player createPlayer(){
 
         ModelData bunnyData = OBJFileLoader.loadOBJ("sphere");

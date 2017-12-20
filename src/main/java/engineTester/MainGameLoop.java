@@ -44,7 +44,7 @@ public class MainGameLoop implements Runnable{
 
     List<Entity> allItems;
     List<Entity> solids;
-    List<Enemy> enemies;
+    List<Cloud> enemies;
     Terrain terrain;
     List<GUITexture> guis;
     List<Light> lights;
@@ -55,7 +55,6 @@ public class MainGameLoop implements Runnable{
     List<Selectable> selectables;
     PhysicsEngine physics;
     Factory factory;
-    List<Entity> bullets;
     List<RigidBody> cubes;
     List<Entity> visible;
 
@@ -123,25 +122,13 @@ public class MainGameLoop implements Runnable{
         boolean running = true;
 
         allItems = new ArrayList<>();
-        bullets = new ArrayList<>();
-        enemies = new ArrayList<Enemy>();
+        enemies = new ArrayList<Cloud>();
         cubes = new ArrayList<RigidBody>();
         visible = new ArrayList<Entity>();
         selectables = new ArrayList<>();
         solids = new ArrayList<>();
-        factory.init(bullets, cubes, visible, selectables);
-
-
-
-        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
-        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
-        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
-        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("tiles"));
-        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-
-        TerrainTexturePack texturePack= new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-
-        terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
+        factory.init( cubes, visible, selectables);
+        terrain = factory.createTerrain();
 
         physics.init(terrain);
 
@@ -245,7 +232,10 @@ public class MainGameLoop implements Runnable{
         camera.update(interval);
         skybox.update(interval);
         picker.update();
+        for(RigidBody c : physics.getCubes()){
 
+            ((Cloud)c.getEntity()).update(interval);
+        }
         physics.update(interval);
 
     }
@@ -261,10 +251,6 @@ public class MainGameLoop implements Runnable{
         renderer.processTerrain(terrain);
 
         for(Entity entity : visible){
-            renderer.processEntity(entity);
-        }
-
-        for(Entity entity : bullets){
             renderer.processEntity(entity);
         }
 
