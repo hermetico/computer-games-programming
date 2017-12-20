@@ -22,7 +22,7 @@ import java.util.Random;
 
 public class Factory {
 
-    private static final int NUM_CLOUDS = 200;
+    private static final int NUM_CLOUDS = 300;
     private static Factory instance;
     private List<RigidBody> cubes;
     private List<Entity> visible;

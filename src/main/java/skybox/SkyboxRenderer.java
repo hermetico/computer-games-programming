@@ -56,12 +56,12 @@ public class SkyboxRenderer {
             SIZE, -SIZE,  SIZE
     };
     private static String[] SKYBOX_FILES = {
-            "skybox/night/right",
-            "skybox/night/left",
-            "skybox/night/top",
-            "skybox/night/bottom",
-            "skybox/night/back",
-            "skybox/night/front"
+            "skybox/day/right",
+            "skybox/day/left",
+            "skybox/day/top",
+            "skybox/day/bottom",
+            "skybox/day/back",
+            "skybox/day/front"
     };
 
     private RawModel cube;
