@@ -50,7 +50,7 @@ public class Factory {
     }
 
     public Light createJetPackLight(){
-        return new Light(new Vector3f(0,0,0), new Vector3f(1,1,1), new Vector3f(0.05f, 0.05f, 0.05f));
+        return new Light(new Vector3f(0,0,0), new Vector3f(0.5f,0.5f,1), new Vector3f(0.2f, 0.2f, 0.2f));
     }
 
     public void createBullet( Vector3f position, Vector3f old_position){

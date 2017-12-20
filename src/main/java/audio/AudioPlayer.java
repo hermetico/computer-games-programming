@@ -10,19 +10,19 @@ import java.util.List;
 import static org.lwjgl.openal.AL10.alDeleteBuffers;
 import static org.lwjgl.openal.ALC10.*;
 
-public final class AudioMaster {
+public final class AudioPlayer {
 
-
+    private static final AudioPlayer music = new AudioPlayer();
+    private static final AudioPlayer music2 = new AudioPlayer();
 
     private static List<Integer> buffers = new ArrayList<>();
     private static long device;
     private static long context;
 
-    public AudioMaster() {
-    }
+    private AudioPlayer() {}
 
-    public void init(int numDevice){
-        final String defaultDeviceName = alcGetString(numDevice, ALC_DEFAULT_DEVICE_SPECIFIER);
+    public void init(){
+        final String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
         device = alcOpenDevice(defaultDeviceName);
 
         int[] attributes = {0};
@@ -57,4 +57,10 @@ public final class AudioMaster {
         alcCloseDevice(device);
     }
 
+    public static AudioPlayer getInstance(){
+        return music;
+    }
+    public static AudioPlayer getInstance2(){
+        return music2;
+    }
 }

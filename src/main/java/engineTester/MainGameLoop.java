@@ -85,7 +85,8 @@ public class MainGameLoop implements Runnable{
         mouseInput = MouseInput.getInstance();
         keyboardInput = KeyboardInput.getInstance();
         physics = PhysicsEngine.getInstance();
-        var = AudioMaster.getInstance2();
+        var = new AudioMaster();
+        var.init(0);
 
     }
 
@@ -115,7 +116,6 @@ public class MainGameLoop implements Runnable{
         skybox = new Skybox(loader);
         renderer.init(display.getWidth(), display.getHeight(), skybox);
         factory = Factory.getInstance();
-        var.init();
 
     }
 
@@ -193,6 +193,7 @@ public class MainGameLoop implements Runnable{
         guiRenderer.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
+        physics.cleanUpSounds();
         var.cleanUp();
     }
 

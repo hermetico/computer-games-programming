@@ -10,8 +10,8 @@ public class Test
 {
     public static void main(final String[] arg) throws IOException, InterruptedException
     {
-        AudioMaster var = AudioMaster.getInstance();
-        var.init();
+        AudioMaster var = new AudioMaster();
+
         var.setListenerData(0, 0, 0);
 
         final int buffer = var.loadSound("audio/bounce.wav");

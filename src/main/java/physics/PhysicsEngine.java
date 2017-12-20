@@ -56,8 +56,8 @@ public class PhysicsEngine {
     private PhysicsEngine() {}
 
     public void init(Terrain terrain){
-        var = AudioMaster.getInstance();
-        var.init();
+        var = new AudioMaster();
+        var.init(1);
         this.terrain = terrain;
         this.keyboardInput = KeyboardInput.getInstance();
         factory = Factory.getInstance();
@@ -394,6 +394,9 @@ public class PhysicsEngine {
         source.setLooping(false);
         source.play(buffer);
         source.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+    }
+    public void cleanUpSounds(){
+        var.cleanUp();
     }
 
 }
