@@ -90,7 +90,7 @@ public class Camera {
     }
 
     private void calculatePitch(){
-        if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY)){
+        if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY) || keyboardInput.isKeyPressed(GLFW_KEY_V)){
             pitch -=  mouseInput.getYOffset() * 0.1f;
 
         }
@@ -98,8 +98,11 @@ public class Camera {
 
     private void calculateAngleAroundPlayer(){
         if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY)){
+            //
+            this.observed.increaseRotation(0,mouseInput.getXOffset() * 0.3f,0);
+        }
+        if(keyboardInput.isKeyPressed(GLFW_KEY_V)){
             angleAroundObserved += mouseInput.getXOffset() * 0.3f;
-            //this.observed.increaseRotation(0,mouseInput.getXOffset() * 0.3f,0);
         }
     }
 

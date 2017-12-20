@@ -67,6 +67,7 @@ public class Player extends Entity {
         if (!shooting){
             shooting = true;
             Vector3f old_position = new Vector3f(this.position);
+            old_position.y += 1;
             float distance = 1.5f;
 
 
