@@ -17,19 +17,18 @@ import physics.RigidBody;
 import renderEngine.*;
 import skybox.Skybox;
 import terrains.Terrain;
-import terrains.TerrainTexture;
-import terrains.TerrainTexturePack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class MainGameLoop implements Runnable{
     private static final int TARGET_FPS = 30;
-    private static final int TARGET_UPS = 30;
+    private static final int TARGET_UPS = 60;
 
 
     private final DisplayManager display;
@@ -43,7 +42,6 @@ public class MainGameLoop implements Runnable{
     MasterRenderer renderer;
     GUIRenderer guiRenderer;
 
-    Camera camera;
     MouseInput mouseInput;
     Light light;
 
@@ -151,12 +149,9 @@ public class MainGameLoop implements Runnable{
 
         player = factory.createPlayer();
         lights.add(player.getJetLight());
-
-        //camera = new Camera(enemies.get(0));
-        camera = new Camera(player);
         guiRenderer = new GUIRenderer(loader);
 
-        picker = new MousePicker(camera, renderer.getProjectionMatrix());
+        picker = new MousePicker(player.getCamera(), renderer.getProjectionMatrix());
 
         selection = new SelectableDetector();
 
@@ -215,7 +210,6 @@ public class MainGameLoop implements Runnable{
     
     public void input() {
         physics.input();
-        camera.input();
         player.input();
 
         if(keyboardInput.isKeyPressed(KeyboardInput.BOXES_KEY)){
@@ -229,7 +223,7 @@ public class MainGameLoop implements Runnable{
 
         if(mouseInput.isKeyPressed(MouseInput.LEFT_KEY)){
             Vector3f ray = picker.computeMouseRay();
-            selection.selectGameItem(selectables, camera, ray);
+            selection.selectGameItem(selectables, player.getCamera(), ray);
         }
 
     }
@@ -237,7 +231,6 @@ public class MainGameLoop implements Runnable{
     protected void update(float interval) {
 
         player.update();
-        camera.update(interval);
         skybox.update(interval);
         picker.update();
         for(RigidBody c : physics.getCubes()){
@@ -262,8 +255,8 @@ public class MainGameLoop implements Runnable{
             renderer.processEntity(entity);
         }
 
-        renderer.render(lights, camera);
-        renderer.renderBoxes(selectables, camera);
+        renderer.render(lights, player.getCamera());
+        renderer.renderBoxes(selectables, player.getCamera());
         display.updateDisplay();
 
     }

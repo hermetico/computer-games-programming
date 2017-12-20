@@ -12,6 +12,7 @@ public class Camera {
 
 
     private Vector3f position = new Vector3f(0,0,0);
+    public final float DEFAULT_PITCH = 20;
     private float pitch = 0;
     private float yaw = 0;
     private float roll;
@@ -29,7 +30,7 @@ public class Camera {
     }
     private void initCameraPosition(){
         angleAroundObserved = 0;
-        pitch = 15;
+        pitch = DEFAULT_PITCH;
         distanceFromObserved = 10;
         yaw = 0;
     }
@@ -43,7 +44,7 @@ public class Camera {
         calculateAngleAroundPlayer();
     }
 
-    public void update(float interval) {
+    public void update() {
         float horizontalDistance = calculateHorizontalDistance();
         float verticalDistance = calculateVerticalDistance();
         calculateCameraPosition(horizontalDistance, verticalDistance);
@@ -97,7 +98,8 @@ public class Camera {
 
     private void calculateAngleAroundPlayer(){
         if(mouseInput.isKeyPressed(MouseInput.RIGHT_KEY)){
-            angleAroundObserved += mouseInput.getXOffset() * 0.3f;
+            //angleAroundObserved += mouseInput.getXOffset() * 0.3f;
+            this.observed.increaseRotation(0,mouseInput.getXOffset() * 0.3f,0);
         }
     }
 
