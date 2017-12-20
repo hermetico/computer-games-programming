@@ -13,6 +13,7 @@ import static org.lwjgl.openal.ALC10.*;
 public final class AudioMaster {
 
     private static final AudioMaster music = new AudioMaster();
+    private static final AudioMaster music2 = new AudioMaster();
 
     private static List<Integer> buffers = new ArrayList<>();
     private static long device;
@@ -58,5 +59,8 @@ public final class AudioMaster {
 
     public static AudioMaster getInstance(){
         return music;
+    }
+    public static AudioMaster getInstance2(){
+        return music2;
     }
 }
